@@ -10,6 +10,9 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
         public float CurrentParam { get; set; }
 
+        public KinematicData Target { get; set; }
+        public KinematicData Character { get; set; }
+
         private MovementOutput EmptyMovementOutput { get; set; }
 
 
@@ -25,10 +28,10 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
             
         }
 
-        public override MovementOutput GetMovement()
-        {
-            //TODO implement the GetMovement 
-            throw new NotImplementedException();
-        }
+        //public override MovementOutput GetMovement()
+        //{
+        //    //TODO implement the GetMovement 
+        //    throw new NotImplementedException();
+        //}
     }
 }

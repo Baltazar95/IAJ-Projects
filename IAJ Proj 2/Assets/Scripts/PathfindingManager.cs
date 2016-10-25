@@ -73,7 +73,7 @@ public class PathfindingManager : MonoBehaviour {
 	            this.startPosition = this.character.KinematicData.position;
 	            this.currentSmoothedSolution = StringPullingPathSmoothing.SmoothPath(this.character.KinematicData,this.currentSolution);
                 this.currentSmoothedSolution.CalculateLocalPathsFromPathPositions(this.character.KinematicData.position);
-                this.character.Movement = new DynamicFollowPath(this.character.KinematicData, this.currentSmoothedSolution);
+                //this.character.Movement = new DynamicFollowPath(this.character.KinematicData, this.currentSmoothedSolution);
 
 	        }
 	    }
