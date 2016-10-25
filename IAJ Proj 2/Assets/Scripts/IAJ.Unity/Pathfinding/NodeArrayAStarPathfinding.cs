@@ -42,10 +42,55 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                 this.NodeRecordArray.AddSpecialCaseNode(childNodeRecord);
             }
 
+            g = bestNode.gValue + connectionEdge.Cost;
+            h = this.Heuristic.H(childNode, this.GoalNode);
+            f = g + h;
+
+            NodeRecord thisChildOpen = this.Open.SearchInOpen(childNodeRecord);
+            NodeRecord thisChildClosed = this.Closed.SearchInClosed(childNodeRecord);
+            bool inOpen = (thisChildOpen == null);
+            bool inClosed = (thisChildClosed == null);
+            if (inOpen && inClosed)
+            {
+                childNodeRecord.parent = bestNode;
+                childNodeRecord.gValue = g;
+                childNodeRecord.hValue = h;
+                childNodeRecord.fValue = f;
+
+                this.Open.AddToOpen(childNodeRecord);
+                if (this.MaxOpenNodes < this.Open.CountOpen())
+                {
+                    this.MaxOpenNodes = this.Open.CountOpen();
+                }
+            }
+            else if (!inOpen && thisChildOpen.fValue >= childNodeRecord.fValue)
+            {
+                childNodeRecord.parent = bestNode;
+                childNodeRecord.gValue = g;
+                childNodeRecord.hValue = h;
+                childNodeRecord.fValue = f;
+
+                this.Open.Replace(childNodeRecord, thisChildOpen);
+            }
+            else if (!inClosed && thisChildClosed.fValue > childNodeRecord.fValue)
+            {
+                childNodeRecord.parent = bestNode;
+                childNodeRecord.gValue = g;
+                childNodeRecord.hValue = h;
+                childNodeRecord.fValue = f;
+
+                this.Closed.RemoveFromClosed(thisChildClosed);
+                this.Open.AddToOpen(childNodeRecord);
+                if (this.MaxOpenNodes < this.Open.CountOpen())
+                {
+                    this.MaxOpenNodes = this.Open.CountOpen();
+                }
+            }
+
 
             // implement the rest of your code here
 
-            
+
         }
 
         private List<NavigationGraphNode> GetNodesHack(NavMeshPathGraph graph)
