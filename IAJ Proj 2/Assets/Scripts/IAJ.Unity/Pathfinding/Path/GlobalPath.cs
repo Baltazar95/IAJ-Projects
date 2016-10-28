@@ -2,7 +2,7 @@
 using Assets.Scripts.IAJ.Unity.Utils;
 using RAIN.Navigation.Graph;
 using UnityEngine;
-
+using System;
 namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
 {
     public class GlobalPath : Path
@@ -24,9 +24,10 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
         public void CalculateLocalPathsFromPathPositions(Vector3 initialPosition)
         {
             Vector3 previousPosition = initialPosition;
+
+           
             for (int i = 0; i < this.PathPositions.Count; i++)
             {
-
                 if (!previousPosition.Equals(this.PathPositions[i]))
                 {
                     this.LocalPaths.Add(new LineSegmentPath(previousPosition, this.PathPositions[i]));
@@ -37,14 +38,23 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
 
         public override float GetParam(Vector3 position, float previousParam)
         {
-            //TODO implement
-            throw new System.NotImplementedException();
+            Vector3 pos;
+            float newParam = 0;
+            float distance = (position - this.LocalPaths[(int)Math.Truncate(previousParam)].GetPosition(previousParam)).sqrMagnitude;
+            for (int paramTest = (int)Math.Truncate(previousParam); paramTest < this.LocalPaths.Count; paramTest++) {
+                newParam = this.LocalPaths[paramTest].GetParam(position, previousParam);
+                Debug.Log("new param: " + newParam);
+                pos = this.LocalPaths[paramTest].GetPosition(newParam);
+                if ((position - pos).sqrMagnitude < distance) {
+                    distance = (position - pos).sqrMagnitude;
+                }
+            }
+            return newParam;
         }
 
         public override Vector3 GetPosition(float param)
         {
-            //TODO implement
-            throw new System.NotImplementedException();
+            return LocalPaths[0].GetPosition(param);
         }
 
         public override bool PathEnd(float param)
