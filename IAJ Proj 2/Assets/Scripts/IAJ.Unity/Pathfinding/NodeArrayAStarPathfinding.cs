@@ -46,11 +46,10 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
             h = this.Heuristic.H(childNode, this.GoalNode);
             f = g + h;
 
-            NodeRecord thisChildOpen = this.Open.SearchInOpen(childNodeRecord);
+             NodeRecord thisChildOpen = this.Open.SearchInOpen(childNodeRecord);
             NodeRecord thisChildClosed = this.Closed.SearchInClosed(childNodeRecord);
-            bool inOpen = (thisChildOpen == null);
-            bool inClosed = (thisChildClosed == null);
-            if (inOpen && inClosed)
+
+            if ((thisChildOpen == null) && (thisChildClosed == null))
             {
                 childNodeRecord.parent = bestNode;
                 childNodeRecord.gValue = g;
@@ -63,7 +62,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                     this.MaxOpenNodes = this.Open.CountOpen();
                 }
             }
-            else if (!inOpen && thisChildOpen.fValue >= childNodeRecord.fValue)
+            else if ((thisChildOpen != null) && thisChildOpen.fValue >= f)
             {
                 childNodeRecord.parent = bestNode;
                 childNodeRecord.gValue = g;
@@ -72,7 +71,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
 
                 this.Open.Replace(childNodeRecord, thisChildOpen);
             }
-            else if (!inClosed && thisChildClosed.fValue > childNodeRecord.fValue)
+            else if ((thisChildClosed != null) && thisChildClosed.fValue > f)
             {
                 childNodeRecord.parent = bestNode;
                 childNodeRecord.gValue = g;
@@ -86,11 +85,6 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                     this.MaxOpenNodes = this.Open.CountOpen();
                 }
             }
-
-
-            // implement the rest of your code here
-
-
         }
 
         private List<NavigationGraphNode> GetNodesHack(NavMeshPathGraph graph)
