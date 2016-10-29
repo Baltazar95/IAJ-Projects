@@ -81,9 +81,10 @@ public class PathfindingManager : MonoBehaviour {
 
 	        }
 	    }
-
+        
         this.character.Update();
-	}
+        
+    }
 
     public void OnGUI()
     {
@@ -155,10 +156,12 @@ public class PathfindingManager : MonoBehaviour {
             }
 
             Gizmos.color = Color.yellow;
+           
             //draw the target for the follow path movement
             if (this.character.Movement != null)
             {
-                Gizmos.DrawSphere(this.character.Movement.Target.position, 1.0f);
+                Debug.Log("UPDATE TARGET POSITION: "  + this.character.Movement.Target.position);
+                Gizmos.DrawSphere(this.character.Movement.Target.position, 50.0f);
             }
         }
     }

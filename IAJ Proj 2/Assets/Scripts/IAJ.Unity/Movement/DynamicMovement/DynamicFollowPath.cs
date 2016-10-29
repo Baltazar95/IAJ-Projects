@@ -19,7 +19,7 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
         public DynamicFollowPath(KinematicData character, Path path) 
         {
-            this.Target = new KinematicData();
+           this.MovingTarget = new KinematicData();
             this.Character = character;
             this.Path = path;
             this.EmptyMovementOutput = new MovementOutput();
@@ -33,12 +33,20 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
         public override MovementOutput GetMovement()
         {
-
+            this.MaxAcceleration = 20.0f;
             this.CurrentParam = this.Path.GetParam(this.Character.position, CurrentParam);
             float targetParam = this.CurrentParam + this.PathOffset;
-            Debug.Log("targetParam: " + targetParam);
-            this.Target.position = this.Path.GetPosition(targetParam);
-            return base.GetMovement();
+            
+            this.MovingTarget.position = this.Path.GetPosition(targetParam);
+            this.EmptyMovementOutput.linear = this.MovingTarget.position - this.Character.position;
+
+            if (this.EmptyMovementOutput.linear.sqrMagnitude > 0)
+            {
+                this.EmptyMovementOutput.linear.Normalize();
+                this.EmptyMovementOutput.linear *= this.MaxAcceleration;
+            }
+
+            return this.EmptyMovementOutput;
            // throw new NotImplementedException();
         }
     }

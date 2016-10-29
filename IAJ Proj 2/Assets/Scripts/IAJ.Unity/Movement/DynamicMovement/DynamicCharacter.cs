@@ -39,9 +39,16 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
                 this.KinematicData.SetOrientationFromVelocity();
                 this.KinematicData.TrimMaxSpeed(this.MaxSpeed);
 
+
+                Debug.Log("////////////////////////////");
+                Debug.Log("KINEMATIC DATA:" + this.KinematicData.position);
+                Debug.Log("////////////////////////////");
+
                 this.GameObject.transform.position = this.KinematicData.position;
                 this.GameObject.transform.rotation = Quaternion.AngleAxis(this.KinematicData.orientation * MathConstants.MATH_180_PI, Vector3.up);
             }
+
+            Debug.Log("null movement");
         }
     }
 }
