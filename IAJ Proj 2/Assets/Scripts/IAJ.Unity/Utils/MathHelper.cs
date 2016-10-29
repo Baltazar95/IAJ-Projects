@@ -77,7 +77,6 @@ namespace Assets.Scripts.IAJ.Unity.Utils
         {
             Vector3 v = line1P1 - line1P0;
             Vector3 w = targetPoint - line1P0;
-
             float c1 = Vector3.Dot(w, v);
             if (c1 <= 0)
                 return 0;
@@ -85,7 +84,7 @@ namespace Assets.Scripts.IAJ.Unity.Utils
             float c2 = v.sqrMagnitude;
             if (c2 <= c1)
                 return 1;
-
+            
             return  c1 / c2;
         }
 

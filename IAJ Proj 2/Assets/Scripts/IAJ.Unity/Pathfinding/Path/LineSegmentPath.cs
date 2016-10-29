@@ -17,7 +17,6 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
         public override Vector3 GetPosition(float param)
         {
             float p = param % 10;
-            
             return LineVector*p;
         }
 
@@ -30,8 +29,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
         public override float GetParam(Vector3 position, float lastParam)
         {
             return MathHelper.closestParamInLineSegmentToPoint(this.StartPosition, this.EndPosition, position);
-
-
+           
         }
     }
 }

@@ -41,8 +41,8 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
             Vector3 pos;
             float newParam = 0;
             float distance = (position - this.LocalPaths[(int)Math.Truncate(previousParam)].GetPosition(previousParam)).sqrMagnitude;
-            for (int paramTest = (int)Math.Truncate(previousParam); paramTest < this.LocalPaths.Count; paramTest++) {
-                newParam = this.LocalPaths[paramTest].GetParam(position, previousParam);
+            for (int paramTest = 0; paramTest < this.LocalPaths.Count; paramTest++) {
+                newParam = this.LocalPaths[paramTest].GetParam(position, previousParam) + paramTest;
                 Debug.Log("new param: " + newParam);
                 pos = this.LocalPaths[paramTest].GetPosition(newParam);
                 if ((position - pos).sqrMagnitude < distance) {

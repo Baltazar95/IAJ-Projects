@@ -11,8 +11,8 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
         public float CurrentParam { get; set; }
 
-        public KinematicData Target { get; set; }
-        public KinematicData Character { get; set; }
+        //public KinematicData Target { get; set; }
+        //public KinematicData Character { get; set; }
 
         private MovementOutput EmptyMovementOutput { get; set; }
 
@@ -36,8 +36,8 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
             this.CurrentParam = this.Path.GetParam(this.Character.position, CurrentParam);
             float targetParam = this.CurrentParam + this.PathOffset;
+            Debug.Log("targetParam: " + targetParam);
             this.Target.position = this.Path.GetPosition(targetParam);
-            this.CurrentParam = targetParam;
             return base.GetMovement();
            // throw new NotImplementedException();
         }
