@@ -38,29 +38,52 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
 
         public override float GetParam(Vector3 position, float previousParam)
         {
-            Vector3 pos;
             float newParam = 0;
-            float distance = (position - this.LocalPaths[(int)Math.Truncate(previousParam)].GetPosition(previousParam)).sqrMagnitude;
-            for (int paramTest = 0; paramTest < this.LocalPaths.Count; paramTest++) {
-                newParam = this.LocalPaths[paramTest].GetParam(position, previousParam) + paramTest;
-                Debug.Log("new param: " + newParam);
-                pos = this.LocalPaths[paramTest].GetPosition(newParam);
-                if ((position - pos).sqrMagnitude < distance) {
-                    distance = (position - pos).sqrMagnitude;
-                }
+            if(this.LocalPaths[(int)previousParam].PathEnd(previousParam))
+            {
+                Debug.Log("NUNCA ENTRO AQUI PORQUE NÃO QUERO");
+                newParam = this.LocalPaths[(int)previousParam + 1].GetParam(position, previousParam);
             }
+            else
+            {
+                Debug.Log("SÓ ENTRO ONDE QUERO");
+                newParam = this.LocalPaths[(int)previousParam].GetParam(position, previousParam);
+            }
+            
             return newParam;
+            //Vector3 pos;
+            //float newParam = 0;
+            //float returnParam = previousParam;
+            //float distance = (position - this.LocalPaths[(int)(previousParam)].GetPosition(previousParam - (int)(previousParam))).sqrMagnitude;
+
+            //for (int paramTest = (int)previousParam; paramTest < this.LocalPaths.Count; paramTest++)
+            //{
+            //    newParam = this.LocalPaths[paramTest].GetParam(position, previousParam);
+            //    pos = this.LocalPaths[paramTest].GetPosition(newParam);
+
+            //    if (position.Equals(this.LocalPaths[(int)(previousParam)].GetPosition(previousParam - (int)(previousParam))) && newParam + paramTest > previousParam)
+            //    {
+            //        Debug.Log("NUCA ENTRO AQUI PORQUE NÃO QUERO");
+            //        returnParam = newParam + paramTest;                
+            //    }
+
+            //}
+            //return returnParam;
         }
 
         public override Vector3 GetPosition(float param)
         {
-            return LocalPaths[0].GetPosition(param);
+            return LocalPaths[(int)param].GetPosition(param - (int)param);
         }
 
         public override bool PathEnd(float param)
         {
-            //TODO implement
-            throw new System.NotImplementedException();
+           if (param >= LocalPaths.Count - 1)
+                return true;
+            else
+            {
+                return false;
+            }
         }
     }
 }

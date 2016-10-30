@@ -19,6 +19,7 @@
         }
         public override MovementOutput GetMovement()
         {
+            this.MaxAcceleration = 20.0f;
             var output = new MovementOutput();
             output.linear = (this.MovingTarget.velocity - this.Character.velocity)/this.TimeToTargetSpeed;
 

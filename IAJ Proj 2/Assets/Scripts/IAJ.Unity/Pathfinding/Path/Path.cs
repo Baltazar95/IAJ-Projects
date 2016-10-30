@@ -25,5 +25,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
         /// <param name="param">the param to see if corresponds to the end of the path</param>
         /// <returns></returns>
         public abstract bool PathEnd(float param);
+
+        public const float PATHEND = 0.98f;
     }
 }

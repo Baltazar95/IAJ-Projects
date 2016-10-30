@@ -6,7 +6,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
     public class LineSegmentPath : LocalPath
     {
         protected Vector3 LineVector;
-        private float offset = 0.3f;
+
         public LineSegmentPath(Vector3 start, Vector3 end)
         {
             this.StartPosition = start;
@@ -16,14 +16,24 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
 
         public override Vector3 GetPosition(float param)
         {
-            float p = param % 10;
-            return LineVector*p;
+            Vector3 vec, n;
+
+           n.x = EndPosition.x - StartPosition.x ;
+           n.z = EndPosition.z - StartPosition.z;
+
+            vec.x = StartPosition.x + n.x * param;
+            vec.y = StartPosition.y;
+            vec.z = StartPosition.z + n.z * param;
+
+            return vec;
         }
 
         public override bool PathEnd(float param)
         {
-            //TODO implement
-            throw new System.NotImplementedException();
+            if (param <= PATHEND)
+                return false;
+            else
+                return true;
         }
 
         public override float GetParam(Vector3 position, float lastParam)
