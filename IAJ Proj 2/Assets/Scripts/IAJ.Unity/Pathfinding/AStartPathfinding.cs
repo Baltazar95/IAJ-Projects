@@ -120,10 +120,8 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                 }
                 bestNode = this.Open.GetBestAndRemove();
 
-                //Se der bronca é provável que seja aqui
                 if (this.GoalNode.Equals(bestNode.node))
                 {
-                    Debug.Log(bestNode);
                     solution = this.CalculateSolution(bestNode, false);
                     this.Closed.AddToClosed(bestNode);
                     ++this.TotalProcessedNodes;

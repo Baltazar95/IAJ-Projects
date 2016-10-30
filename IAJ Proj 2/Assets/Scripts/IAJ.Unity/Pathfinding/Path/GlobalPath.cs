@@ -38,19 +38,16 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
 
         public override float GetParam(Vector3 position, float previousParam)
         {
-            float newParam = 0;
-            if(this.LocalPaths[(int)previousParam].PathEnd(previousParam))
+            var closestParam = this.LocalPaths[(int)previousParam].GetParam(position, previousParam);
+
+            if (PathEnd(previousParam))
             {
-                Debug.Log("NUNCA ENTRO AQUI PORQUE NÃO QUERO");
-                newParam = this.LocalPaths[(int)previousParam + 1].GetParam(position, previousParam);
+                return LocalPaths.Count;
             }
             else
             {
-                Debug.Log("SÓ ENTRO ONDE QUERO");
-                newParam = this.LocalPaths[(int)previousParam].GetParam(position, previousParam);
+                return (int)previousParam + closestParam;
             }
-            
-            return newParam;
             //Vector3 pos;
             //float newParam = 0;
             //float returnParam = previousParam;
@@ -61,10 +58,9 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
             //    newParam = this.LocalPaths[paramTest].GetParam(position, previousParam);
             //    pos = this.LocalPaths[paramTest].GetPosition(newParam);
 
-            //    if (position.Equals(this.LocalPaths[(int)(previousParam)].GetPosition(previousParam - (int)(previousParam))) && newParam + paramTest > previousParam)
+            //    if (newParam + paramTest > previousParam)
             //    {
-            //        Debug.Log("NUCA ENTRO AQUI PORQUE NÃO QUERO");
-            //        returnParam = newParam + paramTest;                
+            //        returnParam = newParam + paramTest;
             //    }
 
             //}
@@ -73,12 +69,16 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
 
         public override Vector3 GetPosition(float param)
         {
-            return LocalPaths[(int)param].GetPosition(param - (int)param);
+            if(this.LocalPaths[(int)param].PathEnd(param - (int)param))
+            {
+                return this.LocalPaths[(int)param].EndPosition;
+            }
+            return this.LocalPaths[(int)param].GetPosition(param - (int)param);
         }
 
         public override bool PathEnd(float param)
         {
-           if (param >= LocalPaths.Count - 1)
+           if (param >= this.LocalPaths.Count - 1)
                 return true;
             else
             {

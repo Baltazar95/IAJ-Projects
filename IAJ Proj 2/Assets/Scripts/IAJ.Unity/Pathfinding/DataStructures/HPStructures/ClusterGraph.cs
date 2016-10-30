@@ -22,8 +22,8 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.HPStructures
         {
             foreach(var cluster in this.clusters )
             {
-                if(node.Position.x < cluster.max.x && node.Position.y < cluster.max.y &&
-                    node.Position.x > cluster.min.x && node.Position.y > cluster.min.y)
+                if(node.Position.x <= cluster.max.x && node.Position.y <= cluster.max.y &&
+                    node.Position.x >= cluster.min.x && node.Position.y >= cluster.min.y)
                 {
                     return cluster;
                 }
