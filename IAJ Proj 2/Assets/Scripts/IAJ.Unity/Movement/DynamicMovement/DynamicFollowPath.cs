@@ -35,15 +35,11 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
         public override MovementOutput GetMovement()
         {
-
-           
             if(!this.ended)
             {
                 this.CurrentParam = this.Path.GetParam(this.Character.position, CurrentParam);
-                Debug.Log("current param: " + this.CurrentParam);
             } 
             float targetParam = this.CurrentParam + this.PathOffset;
-            Debug.Log("target param: " + targetParam);
 
             if (this.Path.PathEnd(targetParam))
             {

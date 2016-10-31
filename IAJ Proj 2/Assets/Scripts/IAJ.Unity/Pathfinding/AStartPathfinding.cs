@@ -105,7 +105,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
             }
         }
 
-        public bool Search(out GlobalPath solution, bool returnPartialSolution = false)
+        public bool Search(out GlobalPath solution, bool returnPartialSolution = true)
         {
             float end, begin = Time.realtimeSinceStartup;
             int nodesPerFrame = 0;

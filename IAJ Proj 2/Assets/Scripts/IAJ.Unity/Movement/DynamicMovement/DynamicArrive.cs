@@ -23,8 +23,8 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
         {
             this.MaxAcceleration = 20.0f;
             maxSpeed = 20.0f;
-            stopRadius = 1.0f;
-            slowRadius = 2.0f;
+            stopRadius = 0.5f;
+            slowRadius = 0.8f;
             float targetSpeed;
             var direction = this.Target.position - this.Character.position;
             var distance = direction.magnitude;
