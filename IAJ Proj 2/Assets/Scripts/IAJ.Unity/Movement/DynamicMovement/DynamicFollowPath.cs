@@ -10,16 +10,17 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
         public float PathOffset { get; set; }
 
         public float CurrentParam { get; set; }
+        public bool ended { get; set; }
 
         //public KinematicData Target { get; set; }
         //public KinematicData Character { get; set; }
 
         private MovementOutput EmptyMovementOutput { get; set; }
-
+        private Vector3 add;
 
         public DynamicFollowPath(KinematicData character, GlobalPath path) 
         {
-           // this.MovingTarget = new KinematicData();
+            this.MovingTarget = new KinematicData();
             this.Target = new KinematicData();
             this.Character = character;
             this.Path = path;
@@ -34,22 +35,23 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
         public override MovementOutput GetMovement()
         {
-            
-            this.MaxAcceleration = 20.0f;
-            this.CurrentParam = this.Path.GetParam(Character.position, CurrentParam);
-            Debug.Log("current param: " + this.CurrentParam);
+           
+            if(!this.ended)
+            {
+                this.CurrentParam = this.Path.GetParam(this.Character.position, CurrentParam);
+                Debug.Log("current param: " + this.CurrentParam);
+            } 
             float targetParam = this.CurrentParam + this.PathOffset;
             Debug.Log("target param: " + targetParam);
 
             if (this.Path.PathEnd(targetParam))
             {
-                Debug.Log("Here fucker! " + targetParam);
                 this.Target.position = this.Path.GetPosition(targetParam);
+                this.ended = true;
                 return base.GetMovement();
             }
 
             this.Target.position = this.Path.GetPosition(targetParam);
-            //Debug.Log("target " + this.Target.position);
 
             return base.GetMovement();
 

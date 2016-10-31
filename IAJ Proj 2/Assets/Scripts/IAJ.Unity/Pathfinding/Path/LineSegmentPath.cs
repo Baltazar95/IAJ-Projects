@@ -22,13 +22,9 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
             
             n.z = EndPosition.z - StartPosition.z;
 
-
-
             vec.x = StartPosition.x + n.x * param;
             vec.y = StartPosition.y;
             vec.z = StartPosition.z + n.z * param;
-
-         
 
             return vec;
         }
@@ -36,7 +32,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
         public override bool PathEnd(float param)
         {
             float p = param - (int)param;
-            if (p < 1.0f)
+            if (p < 0.90f)
                 return false;
             else
                 return true;

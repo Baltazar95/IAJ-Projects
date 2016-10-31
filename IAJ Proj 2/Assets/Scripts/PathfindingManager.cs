@@ -37,9 +37,9 @@ public class PathfindingManager : MonoBehaviour {
         var clusterGraph =  Resources.Load<ClusterGraph>("ClusterGraph");
         this.draw = false;
         this.navMesh = NavigationManager.Instance.NavMeshGraphs[0];
-        //this.AStarPathFinding = new AStarPathfinding(this.navMesh, new NodePriorityHeap(), new Hashmap(), new EuclideanDistanceHeuristic());
+        this.AStarPathFinding = new AStarPathfinding(this.navMesh, new NodePriorityHeap(), new Hashmap(), new EuclideanDistanceHeuristic());
         //this.AStarPathFinding = new NodeArrayAStarPathFinding(this.navMesh, new EuclideanDistanceHeuristic());
-        this.AStarPathFinding = new NodeArrayAStarPathFinding(this.navMesh, new GatewayHeuristic(clusterGraph));
+        //this.AStarPathFinding = new NodeArrayAStarPathFinding(this.navMesh, new GatewayHeuristic(clusterGraph));
         this.AStarPathFinding.NodesPerSearch = 100;
 	}
 	

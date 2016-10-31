@@ -70,19 +70,18 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
 
         public override Vector3 GetPosition(float param)
         {
-            if(this.LocalPaths[(int)param].PathEnd(param - (int)param))
+            if(PathEnd((int)param))
             {
-                return this.LocalPaths[(int)param].EndPosition;
+                return this.LocalPaths[this.LocalPaths.Count-1].EndPosition;
             }
-
             
             return this.LocalPaths[(int)param].GetPosition(param - (int)param);
         }
 
         public override bool PathEnd(float param)
         {
-           if (param >= (this.LocalPaths.Count - 3))
-                return this.LocalPaths[(int)param].PathEnd(param);
+           if (param >= (this.LocalPaths.Count - 1))
+                return true;
             else
             {
                 return false;
