@@ -12,28 +12,49 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.HPStructures
         public List<Cluster> clusters;
         public List<Gateway> gateways;
         public GatewayDistanceTableRow[] gatewayDistanceTable;
+        //public Dictionary<NavigationGraphNode, Cluster> map;
+        public List<Cluster> nodeInCluster;
+        public List<NavigationGraphNode> nodes; 
 
         public ClusterGraph()
         {
             this.clusters = new List<Cluster>();
             this.gateways = new List<Gateway>();
+            //this.map = new Dictionary<NavigationGraphNode, Cluster>();
+            this.nodeInCluster = new List<Cluster>();
+            this.nodes = new List<NavigationGraphNode>();
+            
         }
 
         public Cluster Quantize(NavigationGraphNode node)
         {
             //optimization - do a dictionary
             //optimization store nodes in cluster, while preprocessing
-            foreach (var cluster in clusters)
-            {
 
-                if (MathHelper.PointInsideBoundingBox(node.Position, cluster.min, cluster.max))
-                {
-                    //Debug.Log("in the matrix");
-                    return cluster;
-                }
-            }
-                return null;
+            //foreach (var cluster in clusters)
+            //{
+
+            //    if (MathHelper.PointInsideBoundingBox(node.Position, cluster.min, cluster.max))
+            //    {
+            //        //Debug.Log("in the matrix");
+            //        return cluster;
+            //    }
+            //}
+            //    return null;
+
+            return nodeInCluster[node.NodeIndex];
         }
+
+        public void AddNode(NavigationGraphNode node, Cluster KlausTheCluster)
+        {
+            //Debug.Log(node.ToString());
+            
+            nodeInCluster.Insert(node.NodeIndex, KlausTheCluster);
+            //nodes.Add(node);
+
+        }
+
+   
 
         public void SaveToAssetDatabase()
         {
@@ -63,6 +84,13 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.HPStructures
             {
                 AssetDatabase.AddObjectToAsset(gateway, assetPathAndName);
             }
+
+            //save the nodeinclusters
+            foreach (var clust in this.nodeInCluster)
+            {
+                AssetDatabase.AddObjectToAsset(clust, assetPathAndName);
+            }
+
 
             //save the gatewayTableRows and tableEntries
             foreach (var tableRow in this.gatewayDistanceTable)

@@ -12,11 +12,6 @@ using Assets.Scripts.IAJ.Unity.Pathfinding.Heuristics;
 using System;
 
 
-struct Table
-{
-    GatewayDistanceTableRow[] rows;
-}
-
 public class IAJMenuItems  {
 
     [MenuItem("IAJ/Create Cluster Graph")]
@@ -67,11 +62,32 @@ public class IAJMenuItems  {
                 }
             }
         }
+        //precimpute cluster indices for all nodes
+        var pathfindingAlgorithm = new NodeArrayAStarPathFinding(navMesh, new EuclideanDistanceHeuristic());
+
+        var nodes = GetNodesHack(pathfindingAlgorithm.NavMeshGraph);
+     
+        var nodesInCluster = new List<Cluster>();
+        foreach(var node in nodes)
+        {
+            foreach (var _cluster in clusterGraph.clusters)
+            {
+
+                if (MathHelper.PointInsideBoundingBox(node.Position, _cluster.min, _cluster.max))
+                {
+                    cluster = ScriptableObject.CreateInstance<Cluster>();
+                    cluster.center = _cluster.center;
+                    cluster.gateways = _cluster.gateways;
+                    cluster.max = _cluster.max;
+                    cluster.min = _cluster.min;
+                    clusterGraph.AddNode(node, cluster);
+                }
+            }
+        }
 
         // Second stage of the algorithm, calculation of the Gateway table
         clusterGraph.gatewayDistanceTable = new GatewayDistanceTableRow[gateways.Length];
 
-        var pathfindingAlgorithm = new NodeArrayAStarPathFinding(navMesh, new EuclideanDistanceHeuristic());
         //TODO implement the rest of the algorithm here, i.e. build the GatewayDistanceTable
 
         foreach (var beginGate in clusterGraph.gateways)
@@ -86,7 +102,7 @@ public class IAJMenuItems  {
                 if (combinationGate.id != beginGate.id)
                 {
                     pathfindingAlgorithm.InitializePathfindingSearch(beginGate.center, combinationGate.center);
-                    var finished = pathfindingAlgorithm.Search(out solution ,false);
+                    var finished = pathfindingAlgorithm.Search(out solution, false);
 
                     if (finished && solution != null)
                     {
