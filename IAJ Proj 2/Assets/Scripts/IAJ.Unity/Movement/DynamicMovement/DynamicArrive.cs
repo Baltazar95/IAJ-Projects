@@ -20,8 +20,8 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
         public override MovementOutput GetMovement()
         {
             maxSpeed = 20.0f;
-            stopRadius = 2.0f;
-            slowRadius = 5.0f;
+            stopRadius = 0.01f;
+            slowRadius = 0.1f;
             float targetSpeed;
             var direction = this.Target.position - this.Character.position;
             var distance = direction.magnitude;

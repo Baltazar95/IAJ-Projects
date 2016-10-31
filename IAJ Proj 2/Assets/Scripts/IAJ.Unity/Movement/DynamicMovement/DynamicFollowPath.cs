@@ -6,7 +6,7 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 {
     public class DynamicFollowPath : DynamicArrive
     {
-        public Path Path { get; set; }
+        public GlobalPath Path { get; set; }
         public float PathOffset { get; set; }
 
         public float CurrentParam { get; set; }
@@ -17,14 +17,14 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
         private MovementOutput EmptyMovementOutput { get; set; }
 
 
-        public DynamicFollowPath(KinematicData character, Path path) 
+        public DynamicFollowPath(KinematicData character, GlobalPath path) 
         {
-            this.MovingTarget = new KinematicData();
+           // this.MovingTarget = new KinematicData();
             this.Target = new KinematicData();
             this.Character = character;
             this.Path = path;
             this.EmptyMovementOutput = new MovementOutput();
-            this.PathOffset = 2.0f;
+            this.PathOffset = 3.0f;
             this.CurrentParam = 0.0f;
             //don't forget to set all properties
             //arrive properties
@@ -37,13 +37,21 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
             
             this.MaxAcceleration = 20.0f;
             this.CurrentParam = this.Path.GetParam(Character.position + Character.velocity, CurrentParam);
-            Debug.Log("current param: " + this.CurrentParam);
             float targetParam = this.CurrentParam + this.PathOffset;
+
+            var distance = (this.Target.position - this.Character.position).magnitude;
+            Debug.Log("DISTANCE " + distance);
+            if (distance > 20.0f) {
+                Debug.Log("I AM HEREHRERIHEHREHR");
+                this.PathOffset /= 3;
+            }
             if (this.Path.PathEnd(targetParam))
             {
-                this.Target.position = this.Path.GetPosition(targetParam);
-                return base.GetMovement();
+
+                this.PathOffset = 0.2f;
+                targetParam = this.CurrentParam + this.PathOffset;
             }
+
             Debug.Log("target param: " + targetParam);
 
             this.Target.position = this.Path.GetPosition(targetParam);

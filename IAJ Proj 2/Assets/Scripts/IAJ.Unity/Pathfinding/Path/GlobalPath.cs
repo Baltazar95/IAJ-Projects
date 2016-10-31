@@ -11,8 +11,8 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
         public List<Vector3> PathPositions { get; protected set; } 
         public bool IsPartial { get; set; }
         public float Length { get; set; }
-        public List<LocalPath> LocalPaths { get; protected set; } 
-
+        public List<LocalPath> LocalPaths { get; protected set; }
+        private float offset = 5.0f;
 
         public GlobalPath()
         {
@@ -38,6 +38,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
 
         public override float GetParam(Vector3 position, float previousParam)
         {
+           
             var closestParam = this.LocalPaths[(int)previousParam].GetParam(position, previousParam);
 
             if (PathEnd(previousParam))
@@ -73,13 +74,15 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
             {
                 return this.LocalPaths[(int)param].EndPosition;
             }
+
+            
             return this.LocalPaths[(int)param].GetPosition(param - (int)param);
         }
 
         public override bool PathEnd(float param)
         {
-           if (param >= this.LocalPaths.Count - 1)
-                return true;
+           if (param >= (this.LocalPaths.Count - 3))
+                return this.LocalPaths[(int)param].PathEnd(param);
             else
             {
                 return false;
