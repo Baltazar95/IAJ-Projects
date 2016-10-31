@@ -6,7 +6,7 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 {
     public class DynamicFollowPath : DynamicArrive
     {
-        public Path Path { get; set; }
+        public GlobalPath Path { get; set; }
         public float PathOffset { get; set; }
 
         public float CurrentParam { get; set; }
@@ -17,14 +17,14 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
         private MovementOutput EmptyMovementOutput { get; set; }
 
 
-        public DynamicFollowPath(KinematicData character, Path path) 
+        public DynamicFollowPath(KinematicData character, GlobalPath path) 
         {
-            this.MovingTarget = new KinematicData();
+           // this.MovingTarget = new KinematicData();
             this.Target = new KinematicData();
             this.Character = character;
             this.Path = path;
             this.EmptyMovementOutput = new MovementOutput();
-            this.PathOffset = 5.0f;
+            this.PathOffset = 3.0f;
             this.CurrentParam = 0.0f;
             //don't forget to set all properties
             //arrive properties
@@ -47,7 +47,6 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
                 this.Target.position = this.Path.GetPosition(targetParam);
                 return base.GetMovement();
             }
-
 
             this.Target.position = this.Path.GetPosition(targetParam);
             //Debug.Log("target " + this.Target.position);
