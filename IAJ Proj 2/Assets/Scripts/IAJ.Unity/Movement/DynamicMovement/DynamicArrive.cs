@@ -1,4 +1,6 @@
 ﻿
+using UnityEngine;
+
 namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 {
     public class DynamicArrive : DynamicVelocityMatch
@@ -19,14 +21,15 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
         public override MovementOutput GetMovement()
         {
+            this.MaxAcceleration = 20.0f;
             maxSpeed = 20.0f;
-            stopRadius = 2.0f;
-            slowRadius = 5.0f;
+            stopRadius = 1.0f;
+            slowRadius = 2.0f;
             float targetSpeed;
             var direction = this.Target.position - this.Character.position;
             var distance = direction.magnitude;
 
-            if (distance < stopRadius)
+            if (distance  < stopRadius)
             {
                 targetSpeed = 0;
             }
@@ -37,10 +40,12 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
             }
             else
             {
-                targetSpeed = maxSpeed * (distance / slowRadius);
+               
+                targetSpeed = maxSpeed * (distance / (slowRadius));
+                //this.Character.velocity = Vector3.zero;
             }
-
-            this.MovingTarget.velocity = direction.normalized * targetSpeed;
+            
+            this.Character.velocity = direction.normalized * targetSpeed;
 
             return base.GetMovement();
         }
