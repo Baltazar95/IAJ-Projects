@@ -37,17 +37,17 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
             
             this.MaxAcceleration = 20.0f;
             this.CurrentParam = this.Path.GetParam(Character.position + Character.velocity, CurrentParam);
-            Debug.Log("current param: " + this.CurrentParam);
+            //Debug.Log("current param: " + this.CurrentParam);
             float targetParam = this.CurrentParam + this.PathOffset;
             if (this.Path.PathEnd(targetParam))
             {
                 this.Target.position = this.Path.GetPosition(targetParam);
                 return base.GetMovement();
             }
-            Debug.Log("target param: " + targetParam);
+            //Debug.Log("target param: " + targetParam);
 
             this.Target.position = this.Path.GetPosition(targetParam);
-            Debug.Log("target " + this.Target.position);
+            //Debug.Log("target " + this.Target.position);
 
             return base.GetMovement();
         }

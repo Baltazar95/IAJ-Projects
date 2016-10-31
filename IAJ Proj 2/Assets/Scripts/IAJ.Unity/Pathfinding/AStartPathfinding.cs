@@ -112,7 +112,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
             NodeRecord bestNode = null;
             solution = null;
 
-            while (nodesPerFrame <= 50)
+            while (true)//nodesPerFrame <= 50)
             {
                 if (this.Open.CountOpen() == 0)
                 {

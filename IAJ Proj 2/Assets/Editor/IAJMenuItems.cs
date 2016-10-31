@@ -2,13 +2,20 @@
 using UnityEditor;
 using Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.HPStructures;
 using Assets.Scripts.IAJ.Unity.Pathfinding.Path;
+using Assets.Scripts.IAJ.Unity.Pathfinding;
 using Assets.Scripts.IAJ.Unity.Utils;
 using RAIN.Navigation.NavMesh;
 using System.Collections.Generic;
 using RAIN.Navigation.Graph;
-using Assets.Scripts.IAJ.Unity.Pathfinding;
+using Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures;
 using Assets.Scripts.IAJ.Unity.Pathfinding.Heuristics;
 using System;
+
+
+struct Table
+{
+    GatewayDistanceTableRow[] rows;
+}
 
 public class IAJMenuItems  {
 
@@ -17,11 +24,16 @@ public class IAJMenuItems  {
     {
         Cluster cluster;
         Gateway gateway;
+        GlobalPath solution = null;
+        GatewayDistanceTableRow row;
+        GatewayDistanceTableEntry entry;
 
         //get cluster game objects
         var clusters = GameObject.FindGameObjectsWithTag("Cluster");
+
         //get gateway game objects
         var gateways = GameObject.FindGameObjectsWithTag("Gateway");
+
         //get the NavMeshGraph from the current scene
         NavMeshPathGraph navMesh = GameObject.Find("Navigation Mesh").GetComponent<NavMeshRig>().NavMesh.Graph;
 
@@ -32,6 +44,7 @@ public class IAJMenuItems  {
         {
             var gatewayGO = gateways[i];
             gateway = ScriptableObject.CreateInstance<Gateway>();
+            //i for id
             gateway.Initialize(i,gatewayGO);
             clusterGraph.gateways.Add(gateway);
         }
@@ -56,15 +69,57 @@ public class IAJMenuItems  {
         }
 
         // Second stage of the algorithm, calculation of the Gateway table
-
-        GlobalPath solution = null;
-        float cost;
-        Gateway startGate;
-        Gateway endGate;
+        clusterGraph.gatewayDistanceTable = new GatewayDistanceTableRow[gateways.Length];
 
         var pathfindingAlgorithm = new NodeArrayAStarPathFinding(navMesh, new EuclideanDistanceHeuristic());
-
         //TODO implement the rest of the algorithm here, i.e. build the GatewayDistanceTable
+
+        foreach (var beginGate in clusterGraph.gateways)
+        {
+            row = ScriptableObject.CreateInstance<GatewayDistanceTableRow>();
+            row.entries = new GatewayDistanceTableEntry[clusterGraph.gateways.Count];
+            foreach (var combinationGate in clusterGraph.gateways)
+            {
+                entry = ScriptableObject.CreateInstance<GatewayDistanceTableEntry>();
+                entry.Initialize(beginGate, combinationGate);
+
+                if (combinationGate.id != beginGate.id)
+                {
+                    pathfindingAlgorithm.InitializePathfindingSearch(beginGate.center, combinationGate.center);
+                    var finished = pathfindingAlgorithm.Search(out solution ,false);
+
+                    if (finished && solution != null)
+                    {
+                        entry.shortestDistance = solution.Length;
+                    }
+                    else
+                    {
+                        entry.shortestDistance = float.MaxValue;
+                    }
+
+
+                }
+                else entry.Initialize(0);
+                row.entries[combinationGate.id] = entry;
+            }
+
+            clusterGraph.gatewayDistanceTable[beginGate.id] = row;
+        }
+
+        Debug.Log("Distance table with: " + clusterGraph.gatewayDistanceTable.Length + " rows and " + clusterGraph.gatewayDistanceTable[0].entries.Length + " columns.");
+        string print = "[";
+        for (int i = 0; i < clusterGraph.gatewayDistanceTable.Length; i++)
+        {
+            print += "[";
+            for (int j = 0; j < clusterGraph.gatewayDistanceTable[i].entries.Length; j++)
+            {
+                print += clusterGraph.gatewayDistanceTable[i].entries[j].shortestDistance + ", ";
+            }
+            print += "]\n";
+        }
+        print += "]";
+        Debug.Log(print);
+
 
         //create a new asset that will contain the ClusterGraph and save it to disk (DO NOT REMOVE THIS LINE)
         clusterGraph.SaveToAssetDatabase();

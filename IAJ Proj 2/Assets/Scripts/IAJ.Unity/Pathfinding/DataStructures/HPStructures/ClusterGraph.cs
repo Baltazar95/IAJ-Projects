@@ -1,6 +1,7 @@
 ﻿using RAIN.Navigation.Graph;
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.IAJ.Unity.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,15 +21,18 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.HPStructures
 
         public Cluster Quantize(NavigationGraphNode node)
         {
-            foreach(var cluster in this.clusters )
+            //optimization - do a dictionary
+            //optimization store nodes in cluster, while preprocessing
+            foreach (var cluster in clusters)
             {
-                if(node.Position.x <= cluster.max.x && node.Position.y <= cluster.max.y &&
-                    node.Position.x >= cluster.min.x && node.Position.y >= cluster.min.y)
+
+                if (MathHelper.PointInsideBoundingBox(node.Position, cluster.min, cluster.max))
                 {
+                    //Debug.Log("in the matrix");
                     return cluster;
                 }
             }
-            return null;
+                return null;
         }
 
         public void SaveToAssetDatabase()
@@ -61,11 +65,13 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.HPStructures
             }
 
             //save the gatewayTableRows and tableEntries
-            foreach(var tableRow in this.gatewayDistanceTable)
+            foreach (var tableRow in this.gatewayDistanceTable)
             {
                 AssetDatabase.AddObjectToAsset(tableRow, assetPathAndName);
-                foreach(var tableEntry in tableRow.entries)
+
+                foreach (var tableEntry in tableRow.entries)
                 {
+                   //Debug.Log(tableEntry.startGatewayPosition);
                     AssetDatabase.AddObjectToAsset(tableEntry, assetPathAndName);
                 }
             }

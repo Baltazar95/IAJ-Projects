@@ -35,6 +35,7 @@ public class PathfindingManager : MonoBehaviour {
 	{
         this.character = new DynamicCharacter(characterAvatar);
         var clusterGraph =  Resources.Load<ClusterGraph>("ClusterGraph");
+
         this.draw = false;
         this.navMesh = NavigationManager.Instance.NavMeshGraphs[0];
         //this.AStarPathFinding = new AStarPathfinding(this.navMesh, new NodePriorityHeap(), new Hashmap(), new EuclideanDistanceHeuristic());
