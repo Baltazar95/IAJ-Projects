@@ -19,6 +19,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             double accumulate = 0;
             WorldModel current = initialPlayoutState;
             double random;
+
             while (!current.IsTerminal())
             {
                 accumulate = 0;
@@ -27,7 +28,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 if (actions.Length == 0)
                     continue;
 
-                foreach(var a in actions)
+                foreach (var a in actions)
                 {
                     var child = current.GenerateChildWorldModel();
 
