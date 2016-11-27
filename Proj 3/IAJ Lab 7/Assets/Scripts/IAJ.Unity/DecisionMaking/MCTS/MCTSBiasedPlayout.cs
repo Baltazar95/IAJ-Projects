@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
+using UnityEngine;
+using Assets.Scripts.IAJ.Unity.Utils;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 {
@@ -15,6 +17,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             GOB.Action action;
             GOB.Action[] actions;
+			List<double> hVal = new List<double> ();
             List<double> interval = new List<double>();
             double accumulate = 0;
             WorldModel current = initialPlayoutState;
@@ -29,16 +32,31 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 {
                     var child = current.GenerateChildWorldModel();
 
-                    var h = Math.Pow(-child.CalculateDiscontentment(CurrentStateWorldModel.GetGameManager().autonomousCharacter.Goals), 2);
+					var h = Math.Pow(Math.E, child.CalculateDiscontentment(CurrentStateWorldModel.GetGameManager().autonomousCharacter.Goals));
+					hVal.Add (h);
                     accumulate += h;
-                    interval.Add(accumulate);
+                
                 }
 
-                random = RandomGenerator.Next(0, 1) * accumulate;
+				double lastVal = 0;
+				for (var i = 0; i < actions.Length; i++) {
+					var newVal = hVal[i] / accumulate;
+					Debug.Log (newVal);
+					lastVal += newVal;
+					interval.Add (lastVal);
+
+				}
+
+
+				Debug.Log ("accumulate" + accumulate);
+	
+
+				random = RandomGenerator.NextDouble () * accumulate;
                 for(int j = 0; j < interval.Count; j++)
                 {
                     if(random < interval[j])
                     {
+						//Debug.Log (random + " < " + interval [j]);
                         action = actions[j];
                         current = current.GenerateChildWorldModel();
                         action.ApplyActionEffects(current);
@@ -46,6 +64,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                         break;
                     }
                 }
+				//Debug.Log ("outtie");
             }
 
             Reward reward = new Reward();
