@@ -21,6 +21,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             double random;
             while (!current.IsTerminal())
             {
+                accumulate = 0;
+                interval.Clear();
                 actions = current.GetExecutableActions();
                 if (actions.Length == 0)
                     continue;
@@ -29,12 +31,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 {
                     var child = current.GenerateChildWorldModel();
 
-                    var h = Math.Pow(-child.CalculateDiscontentment(CurrentStateWorldModel.GetGameManager().autonomousCharacter.Goals), 2);
+                    var h = Math.Pow(Math.E, child.CalculateDiscontentment(CurrentStateWorldModel.GetGameManager().autonomousCharacter.Goals));
                     accumulate += h;
                     interval.Add(accumulate);
                 }
 
-                random = RandomGenerator.Next(0, 1) * accumulate;
+                random = RandomGenerator.NextDouble() * accumulate;
                 for(int j = 0; j < interval.Count; j++)
                 {
                     if(random < interval[j])
