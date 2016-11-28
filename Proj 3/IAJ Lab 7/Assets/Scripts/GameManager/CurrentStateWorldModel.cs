@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.Scripts.GameManager
 {
@@ -17,6 +18,7 @@ namespace Assets.Scripts.GameManager
             this.GoalArray = new Goal[4];
             foreach (var goal in goals)
             {
+
                 this.Goals.Add(goal.Name,goal);
                 this.GoalArray[parseGoal(goal.Name)] = goal;
             }
@@ -54,7 +56,9 @@ namespace Assets.Scripts.GameManager
         public override float GetGoalValue(string goalName)
         {
             //return this.Goals[goalName].InsistenceValue;
-            return this.GoalArray[parseGoal(goalName)].InsistenceValue;
+            
+            var value = this.GoalArray[parseGoal(goalName)].InsistenceValue;
+            return value;
             
         }
 
