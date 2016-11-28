@@ -124,10 +124,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                     this.CurrentDepth++;
                     previous = currentNode;
                     currentNode = BestUCTChild(currentNode);
-                    //if(currentNode == null)
-                    //{
-                    //    return previous;
-                    //}
+                    if (currentNode == null)
+                    {
+                        return previous;
+                    }
                 }
             }
             return currentNode;
@@ -225,7 +225,15 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 {
                     BestUCT = uct;
                     best = currentChild;
-
+                }
+                else if(uct == BestUCT)
+                {
+                    var random = RandomGenerator.Next(0, 2);
+                    if(random == 1)
+                    {
+                        BestUCT = uct;
+                        best = currentChild;
+                    }
                 }
             }
             return best;
