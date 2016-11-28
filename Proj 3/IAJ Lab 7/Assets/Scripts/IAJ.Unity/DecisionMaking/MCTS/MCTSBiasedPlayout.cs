@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
+using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 {

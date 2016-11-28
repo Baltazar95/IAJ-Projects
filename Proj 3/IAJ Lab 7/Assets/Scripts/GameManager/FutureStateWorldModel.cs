@@ -49,7 +49,7 @@ namespace Assets.Scripts.GameManager
             {
                 return 1.0f;
             }
-            else return (0.1f * money)+0.1f;
+            else return 0.0f;
         }
 
         public override int GetNextPlayer()
