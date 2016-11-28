@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.GameManager;
+﻿using Assets.Scripts.DecisionMakingActions;
+using Assets.Scripts.GameManager;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
 using System;
 using System.Collections.Generic;
@@ -122,13 +123,13 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 }
                 else
                 {
-                    this.CurrentDepth++;
                     previous = currentNode;
                     currentNode = BestUCTChild(currentNode);
                     if (currentNode == null)
                     {
                         return previous;
                     }
+                    this.CurrentDepth++;
                 }
             }
             return currentNode;
@@ -138,21 +139,25 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             GOB.Action action;
             GOB.Action[] actions;
+            Reward reward = new Reward();
             WorldModel current = initialPlayoutState;
             int random;
-            current = current.GenerateChildWorldModel();
+            actions = current.GetExecutableActions();
+            if (actions.Length == 0)
+            {
+                reward.PlayerID = current.GetNextPlayer();
+                reward.Value = 0;
+            }
+
             while (!current.IsTerminal())
             {
-                actions = current.GetExecutableActions();
-                if (actions.Length == 0)
-                    continue;
+                current = current.GenerateChildWorldModel();
                 random = RandomGenerator.Next(0, actions.Length);
                 action = actions[random];
                 action.ApplyActionEffects(current);
                 current.CalculateNextPlayer();
             }
 
-            Reward reward = new Reward();
             reward.PlayerID = current.GetNextPlayer();
             reward.Value = current.GetScore();
             return reward;

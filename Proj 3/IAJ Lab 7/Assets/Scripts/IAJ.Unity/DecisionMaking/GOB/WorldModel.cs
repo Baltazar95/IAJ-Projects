@@ -56,6 +56,15 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             this.Parent = parent;
             this.ActionEnumerator = this.Actions.GetEnumerator();
         }
+        public bool checkEnemiesDead()
+        {
+            for(int i = 5; i<11; i++)
+            {
+                if ((bool)PropertiesArray[i] == true)
+                    return false;
+            }
+            return true;
+        }
         public int parseProperty(string propertyName)
         {
             //Debug.Log(propertyName);
