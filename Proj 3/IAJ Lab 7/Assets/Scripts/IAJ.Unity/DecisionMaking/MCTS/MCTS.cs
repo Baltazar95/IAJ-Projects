@@ -118,6 +118,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 nextAction = currentNode.State.GetNextAction();
                 if (nextAction != null)
                 {
+                      
                     return Expand(currentNode, nextAction);
                 }
                 else

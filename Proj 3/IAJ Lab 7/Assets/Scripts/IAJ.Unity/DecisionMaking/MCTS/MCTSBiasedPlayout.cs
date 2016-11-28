@@ -43,7 +43,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                     var child = current.GenerateChildWorldModel();
                     var gameMan = CurrentStateWorldModel.GetGameManager();
                     var character = gameMan.autonomousCharacter;
-                    //var h = Math.Pow(Math.E, character.BeQuickGoal.InsistenceValue * 2 + character.SurviveGoal.InsistenceValue * 2 + character.GainXPGoal.InsistenceValue * 1 + character.GetRichGoal.InsistenceValue * 3 + 1 / (float)current.GetProperty(Properties.TIME));
+                    //var h = Math.Pow(Math.E, character.BeQuickGoal.InsistenceValue * 2 + character.SurviveGoal.InsistenceValue * 2 + character.GainXPGoal.InsistenceValue * 1 + character.GetRichGoal.InsistenceValue * 3 + 1 / (float)current.GetProperty(Properties.TIME))
                     //var h = Math.Pow(Math.E, child.CalculateDiscontentment(character.Goals) *(float)current.GetProperty(Properties.TIME));
                     var h = Math.Pow(Math.E,
                         CurrentStateWorldModel.GetGoalValue("BeQuick") * 2

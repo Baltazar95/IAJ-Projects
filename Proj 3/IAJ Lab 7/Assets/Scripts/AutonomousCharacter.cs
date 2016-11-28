@@ -314,6 +314,7 @@ namespace Assets.Scripts
 
                     //    this.CurrentAction = new PickUpChest(this, target);
                     //}
+
                 }
             }
 
