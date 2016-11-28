@@ -48,7 +48,7 @@ namespace Assets.Scripts.GameManager
             {
                 return 1.0f;
             }
-            else return (0.004f * money);
+            else return (0.1f * money);
         }
 
         public override int GetNextPlayer()

@@ -79,8 +79,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 this.CurrentIterations++;
             }
 
-            TotalProcessingTime = Time.realtimeSinceStartup - startTime;
-
             if (this.CurrentIterations >= this.MaxIterations)
             {
                 this.InProgress = false;
@@ -92,7 +90,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             var auxNode = this.BestFirstChild;
             while (true)
             {
-                if (auxNode == null || auxNode.State.IsTerminal())
+                if (auxNode == null)
                 {
                     break;
                 }
@@ -104,7 +102,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             {
                 return null;
             }
-
+            this.TotalProcessingTime = Time.realtimeSinceStartup - startTime;
             return this.BestFirstChild.Action;
     }
 

@@ -32,7 +32,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 {
                     var child = current.GenerateChildWorldModel();
 
-                    var h = Math.Pow(Math.E, child.CalculateDiscontentment(CurrentStateWorldModel.GetGameManager().autonomousCharacter.Goals));
+                    var h = Math.Pow(Math.E, -child.CalculateDiscontentment(CurrentStateWorldModel.GetGameManager().autonomousCharacter.Goals));
                     accumulate += h;
                     interval.Add(accumulate);
                 }
