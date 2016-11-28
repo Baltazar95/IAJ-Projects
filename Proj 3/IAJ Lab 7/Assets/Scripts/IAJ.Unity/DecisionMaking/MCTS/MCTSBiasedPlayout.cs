@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
-using UnityEngine;
-using Assets.Scripts.IAJ.Unity.Utils;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 {
@@ -72,7 +70,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                     }
                 }
             }
-
             
             reward.PlayerID = current.GetNextPlayer();
             reward.Value = current.GetScore();

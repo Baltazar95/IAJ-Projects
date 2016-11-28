@@ -23,7 +23,7 @@ namespace Assets.Scripts
         public const string BE_QUICK_GOAL = "BeQuick";
         public const string GET_RICH_GOAL = "GetRich";
 
-        public const float DECISION_MAKING_INTERVAL = 25.0f;
+        public const float DECISION_MAKING_INTERVAL = 20.0f;
         //public fields to be set in Unity Editor
         public GameManager.GameManager GameManager;
         public Text SurviveGoalText;
@@ -94,7 +94,7 @@ namespace Assets.Scripts
                 ChangeRate = 0.1f
             };
 
-            this.GetRichGoal = new Goal(GET_RICH_GOAL, 1.0f)
+            this.GetRichGoal = new Goal(GET_RICH_GOAL, 3.0f)
             {
                 InsistenceValue = 5.0f,
                 ChangeRate = 0.2f
