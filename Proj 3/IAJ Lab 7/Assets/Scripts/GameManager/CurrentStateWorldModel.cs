@@ -8,16 +8,20 @@ namespace Assets.Scripts.GameManager
     public class CurrentStateWorldModel : FutureStateWorldModel
     {
         private Dictionary<string, Goal> Goals { get; set; } 
+        private Goal[] GoalArray { get; set; }
 
         public CurrentStateWorldModel(GameManager gameManager, List<Action> actions, List<Goal> goals) : base(gameManager, actions)
         {
             this.Parent = null;
             this.Goals = new Dictionary<string, Goal>();
-
+            this.GoalArray = new Goal[4];
             foreach (var goal in goals)
             {
                 this.Goals.Add(goal.Name,goal);
+                this.GoalArray[parseGoal(goal.Name)] = goal;
             }
+
+
         }
 
         public void Initialize()
@@ -49,7 +53,9 @@ namespace Assets.Scripts.GameManager
 
         public override float GetGoalValue(string goalName)
         {
-            return this.Goals[goalName].InsistenceValue;
+            //return this.Goals[goalName].InsistenceValue;
+            return this.GoalArray[parseGoal(goalName)].InsistenceValue;
+            
         }
 
         public override void SetGoalValue(string goalName, float goalValue)

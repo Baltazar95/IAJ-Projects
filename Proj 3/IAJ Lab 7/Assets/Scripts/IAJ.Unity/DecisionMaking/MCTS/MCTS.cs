@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.GameManager;
+﻿using Assets.Scripts.DecisionMakingActions;
+using Assets.Scripts.GameManager;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
 using System;
 using System.Collections.Generic;
@@ -79,8 +80,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 this.CurrentIterations++;
             }
 
-            TotalProcessingTime = Time.realtimeSinceStartup - startTime;
-
             if (this.CurrentIterations >= this.MaxIterations)
             {
                 this.InProgress = false;
@@ -92,7 +91,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             var auxNode = this.BestFirstChild;
             while (true)
             {
-                if (auxNode == null || auxNode.State.IsTerminal())
+                if (auxNode == null)
                 {
                     break;
                 }
@@ -104,7 +103,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             {
                 return null;
             }
-
+            this.TotalProcessingTime = Time.realtimeSinceStartup - startTime;
             return this.BestFirstChild.Action;
     }
 
@@ -142,7 +141,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             Reward reward = new Reward();
             WorldModel current = initialPlayoutState;
             int random;
-            current = current.GenerateChildWorldModel();
             actions = current.GetExecutableActions();
             if (actions.Length == 0)
             {
@@ -152,7 +150,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
             while (!current.IsTerminal())
             {
-                
+                current = current.GenerateChildWorldModel();
                 random = RandomGenerator.Next(0, actions.Length);
                 action = actions[random];
                 action.ApplyActionEffects(current);
@@ -232,7 +230,15 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 {
                     BestUCT = uct;
                     best = currentChild;
-
+                }
+                else if(uct == BestUCT)
+                {
+                    var random = RandomGenerator.Next(0, 2);
+                    if(random == 1)
+                    {
+                        BestUCT = uct;
+                        best = currentChild;
+                    }
                 }
             }
             return best;

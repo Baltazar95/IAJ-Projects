@@ -97,7 +97,7 @@ namespace Assets.Scripts
             this.GetRichGoal = new Goal(GET_RICH_GOAL, 1.0f)
             {
                 InsistenceValue = 5.0f,
-                ChangeRate = 0.1f
+                ChangeRate = 0.5f
             };
 
             this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 2.0f)
@@ -152,10 +152,10 @@ namespace Assets.Scripts
 
             var worldModel = new CurrentStateWorldModel(this.GameManager, this.Actions, this.Goals);
             this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel,this.Actions,this.Goals, 200);
-            this.MCTSDecisionMaking = new MCTS(worldModel);
-            //this.MCTSDecisionMaking = new MCTSBiasedPlayout(worldModel);
+            //this.MCTSDecisionMaking = new MCTS(worldModel);
+            this.MCTSDecisionMaking = new MCTSBiasedPlayout(worldModel);
             this.MCTSDecisionMaking.MaxIterations = 500;
-            this.MCTSDecisionMaking.MaxIterationsProcessedPerFrame = 25;
+            this.MCTSDecisionMaking.MaxIterationsProcessedPerFrame = 100;
         }
 
         void Update()
@@ -168,10 +168,10 @@ namespace Assets.Scripts
                 //first step, perceptions
                 //update the agent's goals based on the state of the world
                 this.SurviveGoal.InsistenceValue = this.GameManager.characterData.MaxHP - this.GameManager.characterData.HP;
-                if(this.SurviveGoal.InsistenceValue > 10.0f)
-                {
-                    this.SurviveGoal.InsistenceValue = 10.0f;
-                }
+                //if(this.SurviveGoal.InsistenceValue > 10.0f)
+                //{
+                //    this.SurviveGoal.InsistenceValue = 10.0f;
+                //}
 
                 this.BeQuickGoal.InsistenceValue += DECISION_MAKING_INTERVAL * 0.1f;
                 if(this.BeQuickGoal.InsistenceValue > 10.0f)
@@ -194,7 +194,7 @@ namespace Assets.Scripts
 
                 if (this.GameManager.characterData.Money > this.previousGold)
                 {
-                    //this.GetRichGoal.InsistenceValue -= this.GameManager.characterData.Money - this.previousGold;
+                    this.GetRichGoal.InsistenceValue -= this.GameManager.characterData.Money - this.previousGold;
                     this.previousGold = this.GameManager.characterData.Money;
                 }
 
@@ -261,18 +261,34 @@ namespace Assets.Scripts
                 var action = this.MCTSDecisionMaking.Run();
                 if (action != null)
                 {
+                    float min = float.MaxValue;
+                    GameObject target = null;
                     this.CurrentAction = action;
+                    if (GameObject.FindGameObjectsWithTag("Orc").Length == 0 && GameObject.FindGameObjectsWithTag("Dragon").Length == 0 &&
+                         GameObject.FindGameObjectsWithTag("Skeleton").Length == 0)
+                    {
+                        foreach (var chest in GameManager.chests)
+                        {
+                            var distance = (this.transform.position - chest.transform.position).magnitude;
+                            Debug.Log(distance);
+                            if (distance < min)
+                            {
+                                min = distance;
+                                target = chest;
+                            }
+                        }
+                        this.CurrentAction = new PickUpChest(this, target);
+                    }
                 }
             }
 
-            this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTSDecisionMaking.TotalProcessingTime.ToString("F");
-            
+            this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTSDecisionMaking.TotalProcessingTime.ToString();            
             this.ProcessedActionsText.text = "Max Depth: " + this.MCTSDecisionMaking.MaxPlayoutDepthReached.ToString();
 
             if (this.MCTSDecisionMaking.BestFirstChild != null)
             {
                 var q = this.MCTSDecisionMaking.BestFirstChild.Q / this.MCTSDecisionMaking.BestFirstChild.N;
-                this.BestDiscontentmentText.text = "Best Exp. Q value: " + q.ToString("F");
+                this.BestDiscontentmentText.text = "Best Exp. Q value: " + q.ToString();
                 var actionText = "";
                 foreach (var action in this.MCTSDecisionMaking.BestActionSequence)
                 {

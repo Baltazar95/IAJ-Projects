@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
+using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 {
@@ -12,7 +13,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         }
 
         protected override Reward Playout(WorldModel initialPlayoutState)
-        {
+        { 
             GOB.Action action;
             GOB.Action[] actions;
             List<double> interval = new List<double>();
@@ -21,11 +22,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             Reward reward = new Reward();
             double random;
 
+
+            current = current.GenerateChildWorldModel();
             actions = current.GetExecutableActions();
             if(actions.Length == 0)
             {
-                current = current.GenerateChildWorldModel();
-                reward.Value = float.MinValue;
+                reward.Value = 0;
                 reward.PlayerID = current.GetNextPlayer();
                 return reward;
             }
@@ -39,9 +41,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 foreach (var a in actions)
                 {
                     var child = current.GenerateChildWorldModel();
-                    var goals = CurrentStateWorldModel.GetGameManager().autonomousCharacter.Goals;
-                    var h = Math.Pow(Math.E, child.CalculateDiscontentment(goals));
-                    //var h = Math.Pow(Math.E, goals);
+                    var gameMan = CurrentStateWorldModel.GetGameManager();
+                    var character = gameMan.autonomousCharacter;
+                    var h = Math.Pow(Math.E, character.BeQuickGoal.InsistenceValue * 2 + character.SurviveGoal.InsistenceValue * 2 + character.GainXPGoal.InsistenceValue * 1 + character.GetRichGoal.InsistenceValue * 3 + 1 / (float)current.GetProperty(Properties.TIME));
+                    //var h = Math.Pow(Math.E, child.CalculateDiscontentment(character.Goals) *(float)current.GetProperty(Properties.TIME));
+
+                    //Debug.Log((float)current.GetProperty(Properties.TIME));
                     accumulate += h;
                     interval.Add(accumulate);
                 }
@@ -52,7 +57,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 {
                     //maybe it gets stuck here
 
-                    if (random < interval[j])
+                    if (random <= interval[j])
                     {
                         action = actions[j];
                         current = current.GenerateChildWorldModel();
@@ -65,7 +70,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                     if (j == interval.Count - 1)
                     {
                         current = current.GenerateChildWorldModel();
-                        reward.Value = float.MinValue;
+                        reward.Value = 0;
                         reward.PlayerID = current.GetNextPlayer();
                         return reward;
                     }

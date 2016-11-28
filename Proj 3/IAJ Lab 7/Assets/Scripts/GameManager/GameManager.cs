@@ -63,13 +63,21 @@ namespace Assets.Scripts.GameManager
                 this.characterData.Time += UPDATE_INTERVAL;
             }
 
+            //foreach (var chest in chests)
+            //{
+            //    if (InChestRange(chest))
+            //    {
+            //        this.PickUpChest(chest);
+            //    }
+            //}
+
             if (enemyCharacter != null && currentEnemy != null && currentEnemy.activeSelf)
             {
                 this.enemyCharacter.Movement.Target.position = this.character.transform.position;
                 this.enemyCharacter.Update();
                 this.SwordAttack(currentEnemy);
             }
-
+         
             else
             {
                 foreach (var enemy in this.enemies)
