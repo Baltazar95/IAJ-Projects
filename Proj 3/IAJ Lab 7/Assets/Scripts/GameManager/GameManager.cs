@@ -100,7 +100,7 @@ namespace Assets.Scripts.GameManager
             this.ManaText.text = "Mana: " + this.characterData.Mana;
             this.MoneyText.text = "Money: " + this.characterData.Money;
 
-            if(this.characterData.HP <= 0 || this.characterData.Time >= 300)
+            if(this.characterData.HP <= 0 || this.characterData.Time >= 200)
             {
                 this.GameEnd.SetActive(true);
                 this.GameEnd.GetComponentInChildren<Text>().text = "Game Over";

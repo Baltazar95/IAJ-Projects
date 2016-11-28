@@ -126,10 +126,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                     this.CurrentDepth++;
                     previous = currentNode;
                     currentNode = BestUCTChild(currentNode);
-                    //if(currentNode == null)
-                    //{
-                    //    return previous;
-                    //}
+                    if (currentNode == null)
+                    {
+                        return previous;
+                    }
                 }
             }
             return currentNode;
