@@ -69,6 +69,7 @@ namespace Assets.Scripts.GameManager
                 this.enemyCharacter.Update();
                 this.SwordAttack(currentEnemy);
             }
+
             else
             {
                 foreach (var enemy in this.enemies)

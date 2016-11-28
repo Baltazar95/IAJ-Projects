@@ -39,8 +39,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 foreach (var a in actions)
                 {
                     var child = current.GenerateChildWorldModel();
-
-                    var h = Math.Pow(Math.E, child.CalculateDiscontentment(CurrentStateWorldModel.GetGameManager().autonomousCharacter.Goals));
+                    var goals = CurrentStateWorldModel.GetGameManager().autonomousCharacter.Goals;
+                    var h = Math.Pow(Math.E, child.CalculateDiscontentment(goals));
+                    //var h = Math.Pow(Math.E, goals);
                     accumulate += h;
                     interval.Add(accumulate);
                 }

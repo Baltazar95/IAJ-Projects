@@ -23,7 +23,7 @@ namespace Assets.Scripts
         public const string BE_QUICK_GOAL = "BeQuick";
         public const string GET_RICH_GOAL = "GetRich";
 
-        public const float DECISION_MAKING_INTERVAL = 20.0f;
+        public const float DECISION_MAKING_INTERVAL = 25.0f;
         //public fields to be set in Unity Editor
         public GameManager.GameManager GameManager;
         public Text SurviveGoalText;
@@ -94,10 +94,10 @@ namespace Assets.Scripts
                 ChangeRate = 0.1f
             };
 
-            this.GetRichGoal = new Goal(GET_RICH_GOAL, 3.0f)
+            this.GetRichGoal = new Goal(GET_RICH_GOAL, 1.0f)
             {
                 InsistenceValue = 5.0f,
-                ChangeRate = 0.2f
+                ChangeRate = 0.1f
             };
 
             this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 2.0f)
@@ -152,10 +152,10 @@ namespace Assets.Scripts
 
             var worldModel = new CurrentStateWorldModel(this.GameManager, this.Actions, this.Goals);
             this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel,this.Actions,this.Goals, 200);
-            //this.MCTSDecisionMaking = new MCTS(worldModel);
-            this.MCTSDecisionMaking = new MCTSBiasedPlayout(worldModel);
-            this.MCTSDecisionMaking.MaxIterations = 5000;
-            this.MCTSDecisionMaking.MaxIterationsProcessedPerFrame = 250;
+            this.MCTSDecisionMaking = new MCTS(worldModel);
+            //this.MCTSDecisionMaking = new MCTSBiasedPlayout(worldModel);
+            this.MCTSDecisionMaking.MaxIterations = 500;
+            this.MCTSDecisionMaking.MaxIterationsProcessedPerFrame = 25;
         }
 
         void Update()
@@ -168,6 +168,10 @@ namespace Assets.Scripts
                 //first step, perceptions
                 //update the agent's goals based on the state of the world
                 this.SurviveGoal.InsistenceValue = this.GameManager.characterData.MaxHP - this.GameManager.characterData.HP;
+                if(this.SurviveGoal.InsistenceValue > 10.0f)
+                {
+                    this.SurviveGoal.InsistenceValue = 10.0f;
+                }
 
                 this.BeQuickGoal.InsistenceValue += DECISION_MAKING_INTERVAL * 0.1f;
                 if(this.BeQuickGoal.InsistenceValue > 10.0f)
@@ -190,7 +194,7 @@ namespace Assets.Scripts
 
                 if (this.GameManager.characterData.Money > this.previousGold)
                 {
-                    this.GetRichGoal.InsistenceValue -= this.GameManager.characterData.Money - this.previousGold;
+                    //this.GetRichGoal.InsistenceValue -= this.GameManager.characterData.Money - this.previousGold;
                     this.previousGold = this.GameManager.characterData.Money;
                 }
 
