@@ -44,6 +44,7 @@ namespace Assets.Scripts
         public List<Goal> Goals { get; set; }
         public List<Action> Actions { get; set; }
         public Action CurrentAction { get; private set; }
+        public Action previousAction { get; private set; }
         public DynamicCharacter Character { get; private set; }
         public DepthLimitedGOAPDecisionMaking GOAPDecisionMaking { get; set; }
         public MCTS MCTSDecisionMaking { get; set; }
@@ -204,6 +205,7 @@ namespace Assets.Scripts
                 this.GetRichGoalText.text = "GetRich: " + this.GetRichGoal.InsistenceValue.ToString("F1");
 
                 //initialize Decision Making Proccess
+                this.previousAction = this.CurrentAction;
                 this.CurrentAction = null;
                 if(this.MCTSActive)
                 {
@@ -264,21 +266,55 @@ namespace Assets.Scripts
                     float min = float.MaxValue;
                     GameObject target = null;
                     this.CurrentAction = action;
+                    
+                   
+                        
                     if (GameObject.FindGameObjectsWithTag("Orc").Length == 0 && GameObject.FindGameObjectsWithTag("Dragon").Length == 0 &&
                          GameObject.FindGameObjectsWithTag("Skeleton").Length == 0)
                     {
                         foreach (var chest in GameManager.chests)
                         {
                             var distance = (this.transform.position - chest.transform.position).magnitude;
-                            Debug.Log(distance);
+
                             if (distance < min)
                             {
                                 min = distance;
                                 target = chest;
                             }
                         }
+
                         this.CurrentAction = new PickUpChest(this, target);
                     }
+                    if (previousAction != null && (previousAction.Name.Contains("SwordAttack") || previousAction.Name.Contains("Fireball")))
+                    {
+                        foreach (var chest in GameManager.chests)
+                        {
+                            var distance = (this.transform.position - chest.transform.position).magnitude;
+                            if (distance < min)
+                            {
+                                min = distance;
+                                target = chest;
+                            }
+                        }
+
+                        this.CurrentAction = new PickUpChest(this, target);
+                    }
+
+                    //if (previousAction != null && (previousAction.Name.Contains("PickUpChest")))
+                    //{
+                    //    foreach (var chest in GameManager.chests)
+                    //    {
+                    //        var distance = (this.transform.position - chest.transform.position).magnitude;
+                    //        if (distance < min)
+                    //        {
+                    //            min = distance;
+                    //            target = chest;
+                    //        }
+                    //    }
+
+                    //    this.CurrentAction = new PickUpChest(this, target);
+                    //}
+
                 }
             }
 
