@@ -12,6 +12,7 @@ using Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.HPStructures;
 using Assets.Scripts.IAJ.Unity.Pathfinding.Path;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS;
 using Assets.Scripts.GameManager;
+using Assets.Scripts.IAJ.Unity.DecisionMaking.Smelly_GOB;
 
 namespace Assets.Scripts
 {
@@ -49,6 +50,10 @@ namespace Assets.Scripts
         public MCTS MCTSDecisionMaking { get; set; }
         public AStarPathfinding AStarPathFinding;
 
+        //Smelly GOB
+        public SmellyGOB SmellyGOBDecisionMaking { get; set; }
+        public ClusterGraph clusterGraph { get; set; }
+
         //private fields for internal use only
         private Vector3 startPosition;
         private GlobalPath currentSolution;
@@ -61,8 +66,6 @@ namespace Assets.Scripts
         private int previousXP = 0;
         private Vector3 previousTarget;
 
-
-
         public void Initialize(NavMeshPathGraph navMeshGraph, AStarPathfinding pathfindingAlgorithm)
         {
             this.MCTSActive = true; //change this if you want to try DL-GOAP
@@ -72,6 +75,12 @@ namespace Assets.Scripts
             this.AStarPathFinding.NodesPerSearch = 100;
         }
 
+        public void Initialize(NavMeshPathGraph navMeshGraph)
+        {
+            this.draw = true;
+            this.navMesh = navMeshGraph;
+        }
+
         public void Start()
         {
             this.draw = true;
@@ -79,14 +88,14 @@ namespace Assets.Scripts
             this.navMesh = NavigationManager.Instance.NavMeshGraphs[0];
             this.Character = new DynamicCharacter(this.gameObject);
 
-            var clusterGraph = Resources.Load<ClusterGraph>("ClusterGraph");
-       
+            this.clusterGraph = Resources.Load<ClusterGraph>("ClusterGraph");
+
             this.Initialize(NavigationManager.Instance.NavMeshGraphs[0], new NodeArrayAStarPathFinding(NavigationManager.Instance.NavMeshGraphs[0], new GatewayHeuristic(clusterGraph)));
 
 
             //initialization of the GOB decision making
             //let's start by creating 4 main goals
-            
+
             this.SurviveGoal = new Goal(SURVIVE_GOAL, 2.0f);
 
             this.GainXPGoal = new Goal(GAIN_XP_GOAL, 1.0f)
@@ -151,11 +160,13 @@ namespace Assets.Scripts
             }
 
             var worldModel = new CurrentStateWorldModel(this.GameManager, this.Actions, this.Goals);
-            this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel,this.Actions,this.Goals, 200);
+            this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel, this.Actions, this.Goals, 200);
             //this.MCTSDecisionMaking = new MCTS(worldModel);
             this.MCTSDecisionMaking = new MCTSBiasedPlayout(worldModel);
             this.MCTSDecisionMaking.MaxIterations = 500;
             this.MCTSDecisionMaking.MaxIterationsProcessedPerFrame = 25;
+
+
         }
 
         void Update()
@@ -170,13 +181,13 @@ namespace Assets.Scripts
                 this.SurviveGoal.InsistenceValue = this.GameManager.characterData.MaxHP - this.GameManager.characterData.HP;
 
                 this.BeQuickGoal.InsistenceValue += DECISION_MAKING_INTERVAL * 0.1f;
-                if(this.BeQuickGoal.InsistenceValue > 10.0f)
+                if (this.BeQuickGoal.InsistenceValue > 10.0f)
                 {
                     this.BeQuickGoal.InsistenceValue = 10.0f;
                 }
 
                 this.GainXPGoal.InsistenceValue += 0.1f; //increase in goal over time
-                if(this.GameManager.characterData.XP > this.previousXP)
+                if (this.GameManager.characterData.XP > this.previousXP)
                 {
                     this.GainXPGoal.InsistenceValue -= this.GameManager.characterData.XP - this.previousXP;
                     this.previousXP = this.GameManager.characterData.XP;
@@ -201,7 +212,7 @@ namespace Assets.Scripts
 
                 //initialize Decision Making Proccess
                 this.CurrentAction = null;
-                if(this.MCTSActive)
+                if (this.MCTSActive)
                 {
                     this.MCTSDecisionMaking.InitializeMCTSearch();
                 }
@@ -211,7 +222,7 @@ namespace Assets.Scripts
                 }
             }
 
-            if(this.MCTSActive)
+            if (this.MCTSActive)
             {
                 this.UpdateMCTS();
             }
@@ -220,9 +231,9 @@ namespace Assets.Scripts
                 this.UpdateDLGOAP();
             }
 
-            if(this.CurrentAction != null)
+            if (this.CurrentAction != null)
             {
-                if(this.CurrentAction.CanExecute())
+                if (this.CurrentAction.CanExecute())
                 {
                     this.CurrentAction.Execute();
                 }
@@ -245,6 +256,7 @@ namespace Assets.Scripts
                     };
                 }
             }
+
 
 
             this.Character.Update();

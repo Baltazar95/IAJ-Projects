@@ -62,6 +62,7 @@ public class IAJMenuItems  {
                 }
             }
         }
+
         //precimpute cluster indices for all nodes
         var pathfindingAlgorithm = new NodeArrayAStarPathFinding(navMesh, new EuclideanDistanceHeuristic());
 
@@ -136,6 +137,49 @@ public class IAJMenuItems  {
         print += "]";
         Debug.Log(print);
 
+        //precompute dijkstra and populate smellyNode list
+        int listIndex = 0;
+        foreach (var chest in GameObject.FindGameObjectsWithTag("Chest"))
+        {
+            Cluster klaus = clusterGraph.Quantize(chest.transform.position);
+            dijkstra(clusterGraph, klaus, klaus, listIndex, 1000);
+            listIndex++;
+        }
+
+        foreach(var skeleton in GameObject.FindGameObjectsWithTag("Skeleton"))
+        {
+            Cluster klaus = clusterGraph.Quantize(skeleton.transform.position);
+            dijkstra(clusterGraph, klaus, klaus, listIndex, 1000);
+            listIndex++;
+        }
+
+        foreach (var orc in GameObject.FindGameObjectsWithTag("Orc"))
+        {
+            Cluster klaus = clusterGraph.Quantize(orc.transform.position);
+            dijkstra(clusterGraph, klaus, klaus, listIndex, 1000);
+            listIndex++;
+        }
+
+        foreach (var dragon in GameObject.FindGameObjectsWithTag("Dragon"))
+        {
+            Cluster klaus = clusterGraph.Quantize(dragon.transform.position);
+            dijkstra(clusterGraph, klaus, klaus, listIndex, 1000);
+            listIndex++;
+        }
+
+        foreach (var health in GameObject.FindGameObjectsWithTag("HealthPotion"))
+        {
+            Cluster klaus = clusterGraph.Quantize(health.transform.position);
+            dijkstra(clusterGraph, klaus, klaus, listIndex, 1000);
+            listIndex++;
+        }
+
+        foreach (var mana in GameObject.FindGameObjectsWithTag("ManaPotion"))
+        {
+            Cluster klaus = clusterGraph.Quantize(mana.transform.position);
+            dijkstra(clusterGraph, klaus, klaus, listIndex, 1000);
+            listIndex++;
+        }
 
         //create a new asset that will contain the ClusterGraph and save it to disk (DO NOT REMOVE THIS LINE)
         clusterGraph.SaveToAssetDatabase();
@@ -151,5 +195,27 @@ public class IAJMenuItems  {
         //by the way, NavMeshPathGraph is a derived class from RAINNavigationGraph class and the _pathNodes field is defined in the base class,
         //that's why we're using the type of the base class in the reflection call
         return (List<NavigationGraphNode>)Assets.Scripts.IAJ.Unity.Utils.Reflection.GetInstanceField(typeof(RAINNavigationGraph), graph, "_pathNodes");
+    }
+
+    private static void dijkstra(ClusterGraph clusterGraph, Cluster klaus, Cluster parent, int index, int intensity)
+    {
+        klaus.smellyIntensity[index] = intensity;
+        klaus.smellyClusterIndex[index] = parent.center;
+
+        List<Gateway> gates = klaus.gateways;
+        
+        for(int i = 0; i < gates.Count; i++)
+        {
+            foreach(var cluster in gates[i].clusters)
+            {
+                if(!cluster.Equals(klaus))
+                {
+                    if(cluster.smellyIntensity[index] < intensity-1)
+                    {
+                        dijkstra(clusterGraph, cluster, klaus, index, intensity-1);
+                    }
+                }
+            }
+        }
     }
 }
