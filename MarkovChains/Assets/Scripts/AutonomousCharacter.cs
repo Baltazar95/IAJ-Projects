@@ -248,8 +248,8 @@ namespace Assets.Scripts
                     this.currentSmoothedSolution.CalculateLocalPathsFromPathPositions(this.Character.KinematicData.position);
                     this.Character.Movement = new DynamicFollowPath(this.Character.KinematicData, this.currentSmoothedSolution)
                     {
-                        MaxAcceleration = 200.0f,
-                        MaxSpeed = 40.0f
+                        MaxAcceleration = 400.0f,
+                        MaxSpeed = 80.0f
                     };
                 }
             }
@@ -271,36 +271,36 @@ namespace Assets.Scripts
                     
                    
                         
-                    if (GameObject.FindGameObjectsWithTag("Orc").Length == 0 && GameObject.FindGameObjectsWithTag("Dragon").Length == 0 &&
-                         GameObject.FindGameObjectsWithTag("Skeleton").Length == 0)
-                    {
-                        foreach (var chest in GameManager.chests)
-                        {
-                            var distance = (this.transform.position - chest.transform.position).magnitude;
-
-                            if (distance < min)
-                            {
-                                min = distance;
-                                target = chest;
-                            }
-                        }
-
-                        this.CurrentAction = new PickUpChest(this, target);
-                    }
-                    if (previousAction != null && (previousAction.Name.Contains("SwordAttack") || previousAction.Name.Contains("Fireball")))
-                    {
-                        foreach (var chest in GameManager.chests)
-                        {
-                            var distance = (this.transform.position - chest.transform.position).magnitude;
-                            if (distance < min)
-                            {
-                                min = distance;
-                                target = chest;
-                            }
-                        }
-
-                        this.CurrentAction = new PickUpChest(this, target);
-                    }
+//                    if (GameObject.FindGameObjectsWithTag("Orc").Length == 0 && GameObject.FindGameObjectsWithTag("Dragon").Length == 0 &&
+//                         GameObject.FindGameObjectsWithTag("Skeleton").Length == 0)
+//                    {
+//                        foreach (var chest in GameManager.chests)
+//                        {
+//                            var distance = (this.transform.position - chest.transform.position).magnitude;
+//
+//                            if (distance < min)
+//                            {
+//                                min = distance;
+//                                target = chest;
+//                            }
+//                        }
+//
+//                        this.CurrentAction = new PickUpChest(this, target);
+//                    }
+//                    if (previousAction != null && (previousAction.Name.Contains("SwordAttack") || previousAction.Name.Contains("Fireball")))
+//                    {
+//                        foreach (var chest in GameManager.chests)
+//                        {
+//                            var distance = (this.transform.position - chest.transform.position).magnitude;
+//                            if (distance < min)
+//                            {
+//                                min = distance;
+//                                target = chest;
+//                            }
+//                        }
+//
+//                        this.CurrentAction = new PickUpChest(this, target);
+//                    }
 
                     //if (previousAction != null && (previousAction.Name.Contains("PickUpChest")))
                     //{

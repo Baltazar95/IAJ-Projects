@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace Assets.Scripts.GameManager
 {
@@ -109,15 +110,25 @@ namespace Assets.Scripts.GameManager
             this.ManaText.text = "Mana: " + this.characterData.Mana;
             this.MoneyText.text = "Money: " + this.characterData.Money;
 
-            if(this.characterData.HP <= 0 || this.characterData.Time >= 200)
+            if(this.characterData.HP <= 0 || this.characterData.Time >= 1)
+
             {
                 this.GameEnd.SetActive(true);
                 this.GameEnd.GetComponentInChildren<Text>().text = "Game Over";
+				Debug.Log ("Saving me a table");
+				this.autonomousCharacter.MCTSDecisionMaking.SaveAssets();
+				Debug.Log ("JESUS FUCK");
+				SceneManager.LoadScene ("pathfinding-dungeon");
+
             }
             else if(this.characterData.Money >= 25)
             {
                 this.GameEnd.SetActive(true);
                 this.GameEnd.GetComponentInChildren<Text>().text = "Victory";
+				Debug.Log ("Saving me a table");
+				this.autonomousCharacter.MCTSDecisionMaking.SaveAssets();
+				Debug.Log ("JESUS FUCK");
+				SceneManager.LoadScene ("pathfinding-dungeon");
             }
         }
 

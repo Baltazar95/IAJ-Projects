@@ -236,8 +236,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 
             //array implementation
             //mb do check index function
-            float value;
-            if ((value = this.GoalValuesArray[parseGoal(goalName)]) != null)
+			float value = this.GoalValuesArray[parseGoal(goalName)];
+            if (value != null)
             {
                 return value;
             }

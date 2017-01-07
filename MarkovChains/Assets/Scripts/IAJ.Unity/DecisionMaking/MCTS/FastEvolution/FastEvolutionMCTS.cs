@@ -9,20 +9,26 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS.FastEvolutionMCTS
 {
 	public class FastEvolutionMCTS : MCTS
 	{
+		RandomWalkMarkovChain MC;
+		Genetics evo;
 		public FastEvolutionMCTS(CurrentStateWorldModel currentStateWorldModel) : base(currentStateWorldModel)
 		{
+			evo = new Genetics ();
+		}
+
+		public override void SaveAssets(){
+			evo.CrossOver ();
+			evo.SaveAsset ();
+//			MC.SaveTable ();	
 		}
 
 		protected override Reward Playout(WorldModel initialPlayoutState)
 		{ 
-			GOB.Action action;
-			GOB.Action[] actions;
 			Reward reward = new Reward();
 			WorldModel current = initialPlayoutState;
-			int random;
 
 
-			RandomWalkMarkovChain MC = new RandomWalkMarkovChain (current, previousAction);
+			MC = new RandomWalkMarkovChain (current, previousAction);
 			if (MC.ExecutableActions.Length == 0)
 			{
 				reward.PlayerID = current.GetNextPlayer();
@@ -39,7 +45,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS.FastEvolutionMCTS
 				current = MC.DoRandomTransition (current);
 				current.CalculateNextPlayer();
 			}
-
+			evo.AddTable (MC, current);
+			MC = evo.Deviate (MC);
 			reward.PlayerID = current.GetNextPlayer();
 			reward.Value = (float)MC.GetScore();
 			return reward;
@@ -57,5 +64,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS.FastEvolutionMCTS
 
 			}
 		}
+
 	}
 }

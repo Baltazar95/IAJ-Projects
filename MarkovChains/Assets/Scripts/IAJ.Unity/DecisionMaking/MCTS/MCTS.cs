@@ -108,6 +108,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             return this.BestFirstChild.Action;
     }
 
+		public virtual void SaveAssets()
+		{
+
+		}
         protected MCTSNode Selection(MCTSNode initialNode)
         {
             GOB.Action nextAction;
