@@ -1,0 +1,17 @@
+/home/allen/dev/IAJ-Projects/MarkovChains/obj/Debug/Assembly-CSharp.dll
+/home/allen/dev/IAJ-Projects/MarkovChains/obj/Debug/Assembly-CSharp.pdb
+/home/allen/dev/IAJ-Projects/MarkovChains/Temp/bin/Debug/UnityEngine.dll
+/home/allen/dev/IAJ-Projects/MarkovChains/Temp/bin/Debug/UnityEditor.dll
+/home/allen/dev/IAJ-Projects/MarkovChains/Temp/bin/Debug/UnityEngine.UI.dll
+/home/allen/dev/IAJ-Projects/MarkovChains/Temp/bin/Debug/UnityEngine.Networking.dll
+/home/allen/dev/IAJ-Projects/MarkovChains/Temp/bin/Debug/RAIN.dll
+/home/allen/dev/IAJ-Projects/MarkovChains/Temp/bin/Debug/RAINMetaform.dll
+/home/allen/dev/IAJ-Projects/MarkovChains/Temp/bin/Debug/Unity.DataContract.dll
+/home/allen/dev/IAJ-Projects/MarkovChains/Temp/bin/Debug/Mono.Cecil.dll
+/home/allen/dev/IAJ-Projects/MarkovChains/Temp/bin/Debug/Unity.SerializationLogic.dll
+/home/allen/dev/IAJ-Projects/MarkovChains/Temp/bin/Debug/ICSharpCode.NRefactory.dll
+/home/allen/dev/IAJ-Projects/MarkovChains/Temp/bin/Debug/Unity.UNetWeaver.dll
+/home/allen/dev/IAJ-Projects/MarkovChains/Temp/bin/Debug/Unity.UNetWeaver.dll.mdb
+/home/allen/dev/IAJ-Projects/MarkovChains/Temp/bin/Debug/Unity.CecilTools.dll
+/home/allen/dev/IAJ-Projects/MarkovChains/Temp/bin/Debug/Mono.Cecil.Pdb.dll
+/home/allen/dev/IAJ-Projects/MarkovChains/Temp/bin/Debug/Mono.Cecil.Mdb.dll

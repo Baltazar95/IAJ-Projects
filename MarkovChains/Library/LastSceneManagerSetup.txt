@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/Scenes/pathfinding-dungeon.unity
+  isLoaded: 1
+  isActive: 1
