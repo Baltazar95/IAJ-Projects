@@ -135,6 +135,7 @@ namespace Assets.Scripts.GameManager
                     this.characterData.XP += 20;
                 }
 
+
                 this.WorldChanged = true;
             }
         }

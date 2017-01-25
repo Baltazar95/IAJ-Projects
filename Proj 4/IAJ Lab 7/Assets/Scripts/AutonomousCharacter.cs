@@ -24,7 +24,7 @@ namespace Assets.Scripts
         public const string BE_QUICK_GOAL = "BeQuick";
         public const string GET_RICH_GOAL = "GetRich";
 
-        public const float DECISION_MAKING_INTERVAL = 20.0f;
+        public const float DECISION_MAKING_INTERVAL = 10.0f;
         //public fields to be set in Unity Editor
         public GameManager.GameManager GameManager;
         public Text SurviveGoalText;
@@ -59,7 +59,7 @@ namespace Assets.Scripts
         private GlobalPath currentSolution;
         private GlobalPath currentSmoothedSolution;
         private NavMeshPathGraph navMesh;
-        
+
         private bool draw;
         private float nextUpdateTime = 0.0f;
         private float previousGold = 0.0f;
@@ -103,13 +103,13 @@ namespace Assets.Scripts
                 ChangeRate = 0.1f
             };
 
-            this.GetRichGoal = new Goal(GET_RICH_GOAL, 1.0f)
+            this.GetRichGoal = new Goal(GET_RICH_GOAL, 3.0f)
             {
                 InsistenceValue = 5.0f,
                 ChangeRate = 0.2f
             };
 
-            this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 2.0f)
+            this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 1.0f)
             {
                 ChangeRate = 0.1f
             };
@@ -159,14 +159,18 @@ namespace Assets.Scripts
                 this.Actions.Add(new Fireball(this, enemy));
             }
 
+
+
             var worldModel = new CurrentStateWorldModel(this.GameManager, this.Actions, this.Goals);
-            this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel, this.Actions, this.Goals, 200);
-            //this.MCTSDecisionMaking = new MCTS(worldModel);
-            this.MCTSDecisionMaking = new MCTSBiasedPlayout(worldModel);
-            this.MCTSDecisionMaking.MaxIterations = 500;
-            this.MCTSDecisionMaking.MaxIterationsProcessedPerFrame = 25;
+            //this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel, this.Actions, this.Goals, 200);
+            ////this.MCTSDecisionMaking = new MCTS(worldModel);
+            //this.MCTSDecisionMaking = new MCTSBiasedPlayout(worldModel);
+            //this.MCTSDecisionMaking.MaxIterations = 500;
+            //this.MCTSDecisionMaking.MaxIterationsProcessedPerFrame = 25;
 
 
+            //Smelly GOB adaptation
+            this.SmellyGOBDecisionMaking = new SmellyGOB(this.Goals, this.clusterGraph, this.navMesh, worldModel);
         }
 
         void Update()
@@ -212,24 +216,26 @@ namespace Assets.Scripts
 
                 //initialize Decision Making Proccess
                 this.CurrentAction = null;
-                if (this.MCTSActive)
-                {
-                    this.MCTSDecisionMaking.InitializeMCTSearch();
-                }
-                else
-                {
-                    this.GOAPDecisionMaking.InitializeDecisionMakingProcess();
-                }
+                //if (this.MCTSActive)
+                //{
+                //    this.MCTSDecisionMaking.InitializeMCTSearch();
+                //}
+                //else
+                //{
+                //    this.GOAPDecisionMaking.InitializeDecisionMakingProcess();
+                //}
+                this.SmellyGOBDecisionMaking.InitializeSmellyGOB();
             }
 
-            if (this.MCTSActive)
-            {
-                this.UpdateMCTS();
-            }
-            else
-            {
-                this.UpdateDLGOAP();
-            }
+            //if (this.MCTSActive)
+            //{
+            //    this.UpdateMCTS();
+            //}
+            //else
+            //{
+            //    this.UpdateDLGOAP();
+            //}
+            this.UpdateSmellyGOB();
 
             if (this.CurrentAction != null)
             {
@@ -251,8 +257,8 @@ namespace Assets.Scripts
                     this.currentSmoothedSolution.CalculateLocalPathsFromPathPositions(this.Character.KinematicData.position);
                     this.Character.Movement = new DynamicFollowPath(this.Character.KinematicData, this.currentSmoothedSolution)
                     {
-                        MaxAcceleration = 200.0f,
-                        MaxSpeed = 60.0f
+                        MaxAcceleration = 100.0f,
+                        MaxSpeed = 40.0f
                     };
                 }
             }
@@ -274,7 +280,7 @@ namespace Assets.Scripts
             }
 
             this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTSDecisionMaking.TotalProcessingTime.ToString("F");
-            
+
             this.ProcessedActionsText.text = "Max Depth: " + this.MCTSDecisionMaking.MaxPlayoutDepthReached.ToString();
 
             if (this.MCTSDecisionMaking.BestFirstChild != null)
@@ -325,11 +331,23 @@ namespace Assets.Scripts
             }
         }
 
+        public void UpdateSmellyGOB()
+        {
+            if (SmellyGOBDecisionMaking.InProgress)
+            {
+                var action = SmellyGOBDecisionMaking.Run(this.Character.KinematicData.position);
+                if (action != null)
+                {
+                    this.CurrentAction = action;
+                }
+            }
+        }
+
         public void StartPathfinding(Vector3 targetPosition)
         {
             //if the targetPosition received is the same as a previous target, then this a request for the same target
             //no need to redo the pathfinding search
-            if(!this.previousTarget.Equals(targetPosition))
+            if (!this.previousTarget.Equals(targetPosition))
             {
                 this.AStarPathFinding.InitializePathfindingSearch(this.Character.KinematicData.position, targetPosition);
                 this.previousTarget = targetPosition;

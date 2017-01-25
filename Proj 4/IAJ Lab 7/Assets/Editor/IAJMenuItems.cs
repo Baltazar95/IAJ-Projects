@@ -10,7 +10,7 @@ using RAIN.Navigation.Graph;
 using Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures;
 using Assets.Scripts.IAJ.Unity.Pathfinding.Heuristics;
 using System;
-
+using Assets.Scripts.IAJ.Unity.DecisionMaking.DataStructures.HPStructures;
 
 public class IAJMenuItems  {
 
@@ -35,39 +35,50 @@ public class IAJMenuItems  {
         ClusterGraph clusterGraph = ScriptableObject.CreateInstance<ClusterGraph>();
 
         //create gateway instances for each gateway game object
-        for(int i = 0; i < gateways.Length; i++)
-        {
-            var gatewayGO = gateways[i];
-            gateway = ScriptableObject.CreateInstance<Gateway>();
-            //i for id
-            gateway.Initialize(i,gatewayGO);
-            clusterGraph.gateways.Add(gateway);
-        }
+        for (int i = 0; i < gateways.Length; i++)
+            {
+                var gatewayGO = gateways[i];
+                gateway = ScriptableObject.CreateInstance<Gateway>();
+                //i for id
+                gateway.Initialize(i, gatewayGO);
+                clusterGraph.gateways.Add(gateway);
+            }
 
         //create cluster instances for each cluster game object and check for connections through gateways
         foreach (var clusterGO in clusters)
-        {
-
-            cluster = ScriptableObject.CreateInstance<Cluster>();
-            cluster.Initialize(clusterGO);
-            clusterGraph.clusters.Add(cluster);
-
-            //determine intersection between cluster and gateways and add connections when they intersect
-            foreach(var gate in clusterGraph.gateways)
-            {
-                if (MathHelper.BoundingBoxIntersection(cluster.min, cluster.max, gate.min, gate.max))
                 {
-                    cluster.gateways.Add(gate);
-                    gate.clusters.Add(cluster);
+
+                    cluster = ScriptableObject.CreateInstance<Cluster>();
+                    cluster.Initialize(clusterGO);
+                    clusterGraph.clusters.Add(cluster);
+
+                    //determine intersection between cluster and gateways and add connections when they intersect
+                    foreach (var gate in clusterGraph.gateways)
+                    {
+                        if (MathHelper.BoundingBoxIntersection(cluster.min, cluster.max, gate.min, gate.max))
+                        {
+                            cluster.gateways.Add(gate);
+                            gate.clusters.Add(cluster);
+                        }
+                    }
                 }
-            }
-        }
 
         //precimpute cluster indices for all nodes
         var pathfindingAlgorithm = new NodeArrayAStarPathFinding(navMesh, new EuclideanDistanceHeuristic());
 
         var nodes = GetNodesHack(pathfindingAlgorithm.NavMeshGraph);
-     
+
+        //create the list of smellyNodes
+        int counter = 0;
+        foreach (var node in nodes)
+        {
+            clusterGraph.smellyNodes.Add(new SmellyNode());
+            counter++;
+        }
+        //var node = pathfindingAlgorithm.NavMeshGraph.QuantizeToNode(Vector3.zero,0.5f);
+
+        //node.EdgeOut(0)
+
         var nodesInCluster = new List<Cluster>();
         foreach(var node in nodes)
         {
@@ -123,61 +134,86 @@ public class IAJMenuItems  {
             clusterGraph.gatewayDistanceTable[beginGate.id] = row;
         }
 
-        Debug.Log("Distance table with: " + clusterGraph.gatewayDistanceTable.Length + " rows and " + clusterGraph.gatewayDistanceTable[0].entries.Length + " columns.");
-        string print = "[";
-        for (int i = 0; i < clusterGraph.gatewayDistanceTable.Length; i++)
-        {
-            print += "[";
-            for (int j = 0; j < clusterGraph.gatewayDistanceTable[i].entries.Length; j++)
-            {
-                print += clusterGraph.gatewayDistanceTable[i].entries[j].shortestDistance + ", ";
-            }
-            print += "]\n";
-        }
-        print += "]";
-        Debug.Log(print);
+        //Debug.Log("Distance table with: " + clusterGraph.gatewayDistanceTable.Length + " rows and " + clusterGraph.gatewayDistanceTable[0].entries.Length + " columns.");
+        //string print = "[";
+        //for (int i = 0; i < clusterGraph.gatewayDistanceTable.Length; i++)
+        //{
+        //    print += "[";
+        //    for (int j = 0; j < clusterGraph.gatewayDistanceTable[i].entries.Length; j++)
+        //    {
+        //        print += clusterGraph.gatewayDistanceTable[i].entries[j].shortestDistance + ", ";
+        //    }
+        //    print += "]\n";
+        //}
+        //print += "]";
+        //Debug.Log(print);
 
         //precompute dijkstra and populate smellyNode list
         int listIndex = 0;
+        NavigationGraphNode sNode;
         foreach (var chest in GameObject.FindGameObjectsWithTag("Chest"))
         {
-            Cluster klaus = clusterGraph.Quantize(chest.transform.position);
-            dijkstra(clusterGraph, klaus, klaus, listIndex, 1000);
+            sNode = pathfindingAlgorithm.Quantize(chest.transform.position);
+            //I need to do this because in Recast NavMesh graph, the edges of polygons are considered to be nodes and not the connections.
+            //Theoretically the Quantize method should then return the appropriate edge, but instead it returns a polygon
+            //Therefore, we need to create one explicit connection between the polygon and each edge of the corresponding polygon for the search algorithm to work
+            ((NavMeshPoly)sNode).AddConnectedPoly(sNode.Position);
+            dijkstra(clusterGraph, sNode, sNode, listIndex, 100000, chest.name);
             listIndex++;
         }
 
         foreach(var skeleton in GameObject.FindGameObjectsWithTag("Skeleton"))
         {
-            Cluster klaus = clusterGraph.Quantize(skeleton.transform.position);
-            dijkstra(clusterGraph, klaus, klaus, listIndex, 1000);
+            sNode = pathfindingAlgorithm.Quantize(skeleton.transform.position);
+            //I need to do this because in Recast NavMesh graph, the edges of polygons are considered to be nodes and not the connections.
+            //Theoretically the Quantize method should then return the appropriate edge, but instead it returns a polygon
+            //Therefore, we need to create one explicit connection between the polygon and each edge of the corresponding polygon for the search algorithm to work
+            ((NavMeshPoly)sNode).AddConnectedPoly(sNode.Position);
+            dijkstra(clusterGraph, sNode, sNode, listIndex, 100000, skeleton.name);
             listIndex++;
         }
 
         foreach (var orc in GameObject.FindGameObjectsWithTag("Orc"))
         {
-            Cluster klaus = clusterGraph.Quantize(orc.transform.position);
-            dijkstra(clusterGraph, klaus, klaus, listIndex, 1000);
+            sNode = pathfindingAlgorithm.Quantize(orc.transform.position);
+            //I need to do this because in Recast NavMesh graph, the edges of polygons are considered to be nodes and not the connections.
+            //Theoretically the Quantize method should then return the appropriate edge, but instead it returns a polygon
+            //Therefore, we need to create one explicit connection between the polygon and each edge of the corresponding polygon for the search algorithm to work
+            ((NavMeshPoly)sNode).AddConnectedPoly(sNode.Position);
+            dijkstra(clusterGraph, sNode, sNode, listIndex, 100000, orc.name);
             listIndex++;
         }
 
         foreach (var dragon in GameObject.FindGameObjectsWithTag("Dragon"))
         {
-            Cluster klaus = clusterGraph.Quantize(dragon.transform.position);
-            dijkstra(clusterGraph, klaus, klaus, listIndex, 1000);
+            sNode = pathfindingAlgorithm.Quantize(dragon.transform.position);
+            //I need to do this because in Recast NavMesh graph, the edges of polygons are considered to be nodes and not the connections.
+            //Theoretically the Quantize method should then return the appropriate edge, but instead it returns a polygon
+            //Therefore, we need to create one explicit connection between the polygon and each edge of the corresponding polygon for the search algorithm to work
+            ((NavMeshPoly)sNode).AddConnectedPoly(sNode.Position);
+            dijkstra(clusterGraph, sNode, sNode, listIndex, 100000, dragon.name);
             listIndex++;
         }
 
         foreach (var health in GameObject.FindGameObjectsWithTag("HealthPotion"))
         {
-            Cluster klaus = clusterGraph.Quantize(health.transform.position);
-            dijkstra(clusterGraph, klaus, klaus, listIndex, 1000);
+            sNode = pathfindingAlgorithm.Quantize(health.transform.position);
+            //I need to do this because in Recast NavMesh graph, the edges of polygons are considered to be nodes and not the connections.
+            //Theoretically the Quantize method should then return the appropriate edge, but instead it returns a polygon
+            //Therefore, we need to create one explicit connection between the polygon and each edge of the corresponding polygon for the search algorithm to work
+            ((NavMeshPoly)sNode).AddConnectedPoly(sNode.Position);
+            dijkstra(clusterGraph, sNode, sNode, listIndex, 100000, health.name);
             listIndex++;
         }
 
         foreach (var mana in GameObject.FindGameObjectsWithTag("ManaPotion"))
         {
-            Cluster klaus = clusterGraph.Quantize(mana.transform.position);
-            dijkstra(clusterGraph, klaus, klaus, listIndex, 1000);
+            sNode = pathfindingAlgorithm.Quantize(mana.transform.position);
+            //I need to do this because in Recast NavMesh graph, the edges of polygons are considered to be nodes and not the connections.
+            //Theoretically the Quantize method should then return the appropriate edge, but instead it returns a polygon
+            //Therefore, we need to create one explicit connection between the polygon and each edge of the corresponding polygon for the search algorithm to work
+            ((NavMeshPoly)sNode).AddConnectedPoly(sNode.Position);
+            dijkstra(clusterGraph, sNode, sNode, listIndex, 100000, mana.name);
             listIndex++;
         }
 
@@ -197,24 +233,63 @@ public class IAJMenuItems  {
         return (List<NavigationGraphNode>)Assets.Scripts.IAJ.Unity.Utils.Reflection.GetInstanceField(typeof(RAINNavigationGraph), graph, "_pathNodes");
     }
 
-    private static void dijkstra(ClusterGraph clusterGraph, Cluster klaus, Cluster parent, int index, int intensity)
+    private static void dijkstra(ClusterGraph clusterGraph, NavigationGraphNode node, NavigationGraphNode parent, int index, int intensity, string name)
     {
-        klaus.smellyIntensity[index] = intensity;
-        klaus.smellyClusterIndex[index] = parent.center;
+        NavigationGraphNode currentNode, newNode, nodeInList;
+        List<NavigationGraphNode> open = new List<NavigationGraphNode>();
+        List<NavigationGraphNode> closed = new List<NavigationGraphNode>();
 
-        List<Gateway> gates = klaus.gateways;
-        
-        for(int i = 0; i < gates.Count; i++)
+        //clusterGraph.smellyNodes.Insert(node.NodeIndex, new SmellyNode());
+        clusterGraph.smellyNodes[node.NodeIndex].smellyIntensity[index] = intensity;
+        clusterGraph.smellyNodes[node.NodeIndex].smellyNodeIndex[index] = parent.NodeIndex;
+        clusterGraph.smellyNodes[node.NodeIndex].objectNames[index] = name;
+        open.Add(node);
+
+        while(open.Count != 0)
         {
-            foreach(var cluster in gates[i].clusters)
+            currentNode = open[0];
+            open.Remove(currentNode);
+            closed.Add(currentNode);
+
+            var outconnections = currentNode.OutEdgeCount;
+            for (int i = 0; i < outconnections; i++)
             {
-                if(!cluster.Equals(klaus))
+                intensity = clusterGraph.smellyNodes[currentNode.NodeIndex].smellyIntensity[index] - 1;
+                newNode = currentNode.EdgeOut(i).ToNode;
+
+                nodeInList = closed.Find(x => x.NodeIndex == newNode.NodeIndex);
+                if(nodeInList != null)
                 {
-                    if(cluster.smellyIntensity[index] < intensity-1)
+                    if(clusterGraph.smellyNodes[nodeInList.NodeIndex].smellyIntensity[index] >= intensity)
                     {
-                        dijkstra(clusterGraph, cluster, klaus, index, intensity-1);
+                        continue;
+                    }
+                    else
+                    {
+                        closed.Remove(nodeInList);
                     }
                 }
+                else
+                {
+                    nodeInList = open.Find(x => x.NodeIndex == newNode.NodeIndex);
+
+                    if(nodeInList != null)
+                    {
+                        if(clusterGraph.smellyNodes[nodeInList.NodeIndex].smellyIntensity[index] < intensity)
+                        {
+                            clusterGraph.smellyNodes[nodeInList.NodeIndex].smellyIntensity[index] = intensity;
+                            clusterGraph.smellyNodes[nodeInList.NodeIndex].smellyNodeIndex[index] = currentNode.NodeIndex;
+                            clusterGraph.smellyNodes[nodeInList.NodeIndex].objectNames[index] = name;
+                        }
+                        continue;
+                    }
+                }
+
+                //clusterGraph.smellyNodes.Insert(nodeInList.NodeIndex, new SmellyNode());
+                clusterGraph.smellyNodes[newNode.NodeIndex].smellyIntensity[index] = intensity;
+                clusterGraph.smellyNodes[newNode.NodeIndex].smellyNodeIndex[index] = currentNode.NodeIndex;
+                clusterGraph.smellyNodes[newNode.NodeIndex].objectNames[index] = name;
+                open.Add(newNode);
             }
         }
     }

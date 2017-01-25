@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Assets.Scripts.IAJ.Unity.Utils;
 using UnityEditor;
 using UnityEngine;
+using Assets.Scripts.IAJ.Unity.DecisionMaking.DataStructures.HPStructures;
 
 namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.HPStructures
 {
@@ -13,13 +14,14 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.HPStructures
         public List<Gateway> gateways;
         public GatewayDistanceTableRow[] gatewayDistanceTable;
         public List<Cluster> nodeInCluster;
-
+        public List<SmellyNode> smellyNodes;
 
         public ClusterGraph()
         {
             this.clusters = new List<Cluster>();
             this.gateways = new List<Gateway>();
             this.nodeInCluster = new List<Cluster>();
+            this.smellyNodes = new List<SmellyNode>();
         }
 
         public Cluster Quantize(NavigationGraphNode node)
@@ -97,6 +99,12 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.HPStructures
             foreach (var clust in this.nodeInCluster)
             {
                 AssetDatabase.AddObjectToAsset(clust, assetPathAndName);
+            }
+
+            //save the smellyNodes
+            foreach(var node in this.smellyNodes)
+            {
+                AssetDatabase.AddObjectToAsset(node, assetPathAndName);
             }
 
 

@@ -9,14 +9,10 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures.HPStructures
         public Vector3 min;
         public Vector3 max;
         public List<Gateway> gateways;
-        public Vector3[] smellyClusterIndex;
-        public int[] smellyIntensity;
 
         public Cluster()
         {
             this.gateways = new List<Gateway>();
-            this.smellyClusterIndex = new Vector3[14];
-            this.smellyIntensity = new int[14];
         }
 
         public void Initialize(GameObject clusterObject)
